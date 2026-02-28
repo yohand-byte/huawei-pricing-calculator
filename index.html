@@ -21,93 +21,11 @@
     </style>
   </head>
   <body class="bg-gray-100">
-    <div id="auth-overlay" class="fixed inset-0 hidden items-center justify-center bg-gray-900/80 z-50 px-4">
-      <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-6 space-y-4">
-        <div>
-          <p class="text-sm uppercase tracking-wide text-gray-500 font-semibold">Accès sécurisé</p>
-          <h1 class="text-2xl font-bold text-gray-900 mt-1">Huawei Pricing Calculator</h1>
-          <p class="text-sm text-gray-500 mt-1">Entre le mot de passe partagé pour afficher le tableau.</p>
-        </div>
-        <form id="auth-form" class="space-y-3">
-          <div>
-            <label class="text-sm font-medium text-gray-700 mb-1 block" for="auth-password">Mot de passe</label>
-            <input
-              id="auth-password"
-              type="password"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="********"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Déverrouiller
-          </button>
-          <p id="auth-error" class="text-sm text-red-600 hidden">Mot de passe incorrect.</p>
-        </form>
-        <p class="text-xs text-gray-400 text-center">Accès réservé à l'équipe Huawei / ADAR.</p>
-      </div>
-    </div>
-
-    <div id="protected-root" class="hidden">
-      <div id="app" class="min-h-screen p-4"></div>
-    </div>
-
-    <script>
-      (function () {
-        const PASSWORD_HASH = '385117e3b457a5f3408ab8b2086a5b5dee159fe61c474d0297fa65cd229e52f7';
-        const STORAGE_KEY = 'huaweiPricingAuth';
-        const overlay = document.getElementById('auth-overlay');
-        const container = document.getElementById('protected-root');
-        const form = document.getElementById('auth-form');
-        const input = document.getElementById('auth-password');
-        const error = document.getElementById('auth-error');
-
-        const toHex = (buffer) => Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
-        const sha256 = async (text) => {
-          const data = new TextEncoder().encode(text);
-          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-          return toHex(hashBuffer);
-        };
-
-        const unlock = () => {
-          overlay.classList.add('hidden');
-          container.classList.remove('hidden');
-          error.classList.add('hidden');
-          input.value = '';
-        };
-
-        const checkStored = () => {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved === PASSWORD_HASH) {
-            unlock();
-            return true;
-          }
-          overlay.classList.remove('hidden');
-          return false;
-        };
-
-        checkStored();
-
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const attempt = input.value.trim();
-          if (!attempt) return;
-          const hash = await sha256(attempt);
-          if (hash === PASSWORD_HASH) {
-            localStorage.setItem(STORAGE_KEY, PASSWORD_HASH);
-            unlock();
-          } else {
-            error.classList.remove('hidden');
-          }
-        });
-      })();
-    </script>
+    <div id="app" class="min-h-screen p-4"></div>
 
     <script>
       (() => {
+        /* ── Dubai local charges ── */
         const defaultLocalCharges = [
           { id: 'thc40', label: "THC - Terminal Handling Charge (40' DV/HC)", amountAED: 1100, note: 'Par conteneur', included: true },
           { id: 'tluc', label: 'TLUC – Truck Load/Unload Charge', amountAED: 314, note: 'Par conteneur', included: true },
@@ -123,14 +41,15 @@
           { id: 'customSeal', label: 'Customs Seal (optionnel)', amountAED: 20, note: 'Optionnel', included: false }
         ];
 
+        /* ── Default weights ── */
         const defaultWeights = {
           'SUN2000-100KTL-M2 (AFCI)': 98.5,
           'SUN2000-30KTL-M3': 43,
-          'SUN2000-5KTL-MAP0': 21,
-          'SUN2000-6KTL-MAP0': 21,
-          'SUN2000-8KTL-MAP0': 21,
-          'SUN2000-10KTL-MAP0': 21,
-          'SUN2000-12KTL-MAP0': 21,
+          'SUN2000-5K-MAP0': 21,
+          'SUN2000-6K-MAP0': 21,
+          'SUN2000-8K-MAP0': 21,
+          'SUN2000-10K-MAP0': 21,
+          'SUN2000-12K-MAP0': 21,
           'SUN2000-8K-LC0': 22,
           'SUN2000-10K-LC0': 19.3,
           'SUN2000-12K-MB0': 29,
@@ -155,17 +74,18 @@
           'EMMA-A02 Energy Management Assistant': 1.25
         };
 
+        /* ── Product seed data ── */
         const shippingProductsSeed = [
           { no: 1, description: 'SUN2000-100KTL-M2 (AFCI)', qty: 1, unitPriceUSD: 3333, weightKg: defaultWeights['SUN2000-100KTL-M2 (AFCI)'] || 0, marginPercent: null },
           { no: 2, description: 'SUN2000-30KTL-M3', qty: 4, unitPriceUSD: 1442, weightKg: defaultWeights['SUN2000-30KTL-M3'] || 0, marginPercent: null },
           { no: 3, description: 'SUN2000-6KTL-L1', qty: 6, unitPriceUSD: 471, weightKg: 0, marginPercent: null },
           { no: 4, description: 'SUN2000-8K-LC0', qty: 10, unitPriceUSD: 633, weightKg: defaultWeights['SUN2000-8K-LC0'] || 0, marginPercent: null },
           { no: 5, description: 'SUN2000-10K-LC0', qty: 10, unitPriceUSD: 694, weightKg: defaultWeights['SUN2000-10K-LC0'] || 0, marginPercent: null },
-          { no: 6, description: 'SUN2000-5KTL-MAP0', qty: 10, unitPriceUSD: 700, weightKg: defaultWeights['SUN2000-5KTL-MAP0'] || 0, marginPercent: null },
-          { no: 7, description: 'SUN2000-6KTL-MAP0', qty: 10, unitPriceUSD: 711, weightKg: defaultWeights['SUN2000-6KTL-MAP0'] || 0, marginPercent: null },
-          { no: 8, description: 'SUN2000-8KTL-MAP0', qty: 10, unitPriceUSD: 844, weightKg: defaultWeights['SUN2000-8KTL-MAP0'] || 0, marginPercent: null },
-          { no: 9, description: 'SUN2000-10KTL-MAP0', qty: 10, unitPriceUSD: 944, weightKg: defaultWeights['SUN2000-10KTL-MAP0'] || 0, marginPercent: null },
-          { no: 10, description: 'SUN2000-12KTL-MAP0', qty: 10, unitPriceUSD: 1056, weightKg: defaultWeights['SUN2000-12KTL-MAP0'] || 0, marginPercent: null },
+          { no: 6, description: 'SUN2000-5K-MAP0', qty: 10, unitPriceUSD: 700, weightKg: defaultWeights['SUN2000-5K-MAP0'] || 0, marginPercent: null },
+          { no: 7, description: 'SUN2000-6K-MAP0', qty: 10, unitPriceUSD: 711, weightKg: defaultWeights['SUN2000-6K-MAP0'] || 0, marginPercent: null },
+          { no: 8, description: 'SUN2000-8K-MAP0', qty: 10, unitPriceUSD: 844, weightKg: defaultWeights['SUN2000-8K-MAP0'] || 0, marginPercent: null },
+          { no: 9, description: 'SUN2000-10K-MAP0', qty: 10, unitPriceUSD: 944, weightKg: defaultWeights['SUN2000-10K-MAP0'] || 0, marginPercent: null },
+          { no: 10, description: 'SUN2000-12K-MAP0', qty: 10, unitPriceUSD: 1056, weightKg: defaultWeights['SUN2000-12K-MAP0'] || 0, marginPercent: null },
           { no: 11, description: 'SUN2000-12K-MB0', qty: 10, unitPriceUSD: 1317, weightKg: defaultWeights['SUN2000-12K-MB0'] || 0, marginPercent: null },
           { no: 12, description: 'SUN2000-15K-MB0', qty: 10, unitPriceUSD: 1489, weightKg: defaultWeights['SUN2000-15K-MB0'] || 0, marginPercent: null },
           { no: 13, description: 'SUN2000-17K-MB0', qty: 10, unitPriceUSD: 1517, weightKg: defaultWeights['SUN2000-17K-MB0'] || 0, marginPercent: null },
@@ -189,23 +109,36 @@
           { no: 31, description: 'EMMA-A02 Energy Management Assistant', qty: 5, unitPriceUSD: 267, weightKg: defaultWeights['EMMA-A02 Energy Management Assistant'] || 0, marginPercent: null }
         ];
 
+        /* ── Application state ── */
         const state = {
           exchangeRate: 0.8566,
-          freightQuoteEUR: 4437.37,
+          freightQuoteEUR: 4511.58,
+          customsCostsEUR: 2614.00,
           containerCount: 1,
           aedToUsdRate: 3.6725,
           marginPercent: 30,
           distributionMode: 'unit',
+          /* Shipment info from GEODIS */
+          shipmentWeight: 10021.460,
+          shipmentPackages: 50,
+          shipmentRef: 'SJEAS020855',
+          shipmentVessel: 'ONE HENRY HUDSON / 096E',
+          shipmentContainer: 'SEGU5523662 - 40GP',
+          shipmentOrigin: 'Jebel Ali (UAE)',
+          shipmentDestination: 'Le Havre (France)',
           localCharges: JSON.parse(JSON.stringify(defaultLocalCharges)),
           shippingProducts: JSON.parse(JSON.stringify(shippingProductsSeed))
         };
 
         const app = document.getElementById('app');
-
-        const numberFields = new Set(['exchangeRate', 'freightQuoteEUR', 'containerCount', 'aedToUsdRate', 'marginPercent']);
+        const numberFields = new Set(['exchangeRate', 'freightQuoteEUR', 'customsCostsEUR', 'containerCount', 'aedToUsdRate', 'marginPercent']);
 
         const formatNumber = (value, options = {}) => {
-          const formatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2, ...options });
+          const formatter = new Intl.NumberFormat('fr-FR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            ...options
+          });
           return formatter.format(Number.isFinite(value) ? value : 0);
         };
 
@@ -217,20 +150,37 @@
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
 
+        /* ── Compute local charges (Dubai) ── */
         const computeLocalCharges = () => {
-          const totalAED = state.localCharges.filter((item) => item.included).reduce((sum, item) => sum + Number(item.amountAED || 0), 0);
-          const totalEUR = state.aedToUsdRate === 0 ? 0 : (totalAED / state.aedToUsdRate) * state.exchangeRate;
+          const totalAED = state.localCharges
+            .filter((item) => item.included)
+            .reduce((sum, item) => sum + Number(item.amountAED || 0), 0);
+          const totalEUR =
+            state.aedToUsdRate === 0 ? 0 : (totalAED / state.aedToUsdRate) * state.exchangeRate;
           return { totalAED, totalEUR };
         };
 
+        /* ── Main computation ── */
         const computeShipping = () => {
-          const totalQuantity = state.shippingProducts.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-          const totalWeightKg = state.shippingProducts.reduce((sum, item) => sum + Number(item.weightKg || 0) * Number(item.qty || 0), 0);
+          const totalQuantity = state.shippingProducts.reduce(
+            (sum, item) => sum + Number(item.qty || 0),
+            0
+          );
+          const totalWeightKg = state.shippingProducts.reduce(
+            (sum, item) => sum + Number(item.weightKg || 0) * Number(item.qty || 0),
+            0
+          );
+
           const { totalAED, totalEUR } = computeLocalCharges();
-          const transportPerContainerEUR = state.freightQuoteEUR + totalEUR;
+
+          /* Transport per container = Dubai charges + GEODIS freight + customs/dédouanement */
+          const transportPerContainerEUR =
+            state.freightQuoteEUR + state.customsCostsEUR + totalEUR;
           const transportTotalEUR = transportPerContainerEUR * state.containerCount;
-          const transportTotalUSD = state.exchangeRate === 0 ? 0 : transportTotalEUR / state.exchangeRate;
-          const averageTransportPerUnitUSD = totalQuantity === 0 ? 0 : transportTotalUSD / totalQuantity;
+          const transportTotalUSD =
+            state.exchangeRate === 0 ? 0 : transportTotalEUR / state.exchangeRate;
+          const averageTransportPerUnitUSD =
+            totalQuantity === 0 ? 0 : transportTotalUSD / totalQuantity;
 
           const rows = state.shippingProducts.map((product) => {
             const qty = Number(product.qty || 0);
@@ -248,7 +198,9 @@
             const unitPriceUSD = Number(product.unitPriceUSD || 0);
             const totalAmountUSD = qty * unitPriceUSD;
             const upEUR = unitPriceUSD * state.exchangeRate;
-            const rowMargin = Number.isFinite(product.marginPercent) ? product.marginPercent : state.marginPercent;
+            const rowMargin = Number.isFinite(product.marginPercent)
+              ? product.marginPercent
+              : state.marginPercent;
             const upTranspEUR = (unitPriceUSD + transportShareUSDPerUnit) * state.exchangeRate;
             const upTrMargeEURUnit = upTranspEUR * (1 + rowMargin / 100);
             const totalUpTrMargeEUR = upTrMargeEURUnit * qty;
@@ -295,6 +247,7 @@
           };
         };
 
+        /* ── CSV export ── */
         const downloadCSV = () => {
           const shipping = computeShipping();
           const headers = [
@@ -303,7 +256,7 @@
             'QTY (pcs)',
             'UNIT PRICE (USD)',
             'TOTAL AMOUNT (USD)',
-            `UP USD ➜ EUR @${state.exchangeRate}`,
+            `UP USD > EUR @${state.exchangeRate}`,
             'UP+TR+Mg (EUR)',
             'TOTAL UP+TR+Mg (EUR)',
             'Marge (EUR/u)',
@@ -311,27 +264,81 @@
             'Total Weight (kg)',
             'Marge (%) ligne'
           ];
-
           const rows = shipping.rows.map((row) => [
             row.no,
             row.description,
             row.qty,
             `$${row.unitPriceUSD.toFixed(2)}`,
             `$${row.totalAmountUSD.toFixed(2)}`,
-            `${row.upEUR.toFixed(2)} €`,
-            `${row.upTrMargeEURUnit.toFixed(2)} €`,
-            `${row.totalUpTrMargeEUR.toFixed(2)} €`,
-            `${row.marginEURUnit.toFixed(2)} €`,
+            `${row.upEUR.toFixed(2)} EUR`,
+            `${row.upTrMargeEURUnit.toFixed(2)} EUR`,
+            `${row.totalUpTrMargeEUR.toFixed(2)} EUR`,
+            `${row.marginEURUnit.toFixed(2)} EUR`,
             (row.weightKg || 0).toFixed(2),
             row.totalWeightForRow.toFixed(2),
-            Number.isFinite(row.rowMargin) ? `${row.rowMargin.toFixed(2)} %` : `${state.marginPercent.toFixed(2)} %`
+            Number.isFinite(row.rowMargin)
+              ? `${row.rowMargin.toFixed(2)} %`
+              : `${state.marginPercent.toFixed(2)} %`
           ]);
-
-          rows.push(['Total Quantity:', '', shipping.totals.qty, '', `$${shipping.totals.totalAmountUSD.toFixed(2)}`, '', '', `${shipping.totals.totalUpTrMargeEUR.toFixed(2)} €`, `${shipping.totals.totalMarginEUR.toFixed(2)} €`, '', shipping.totals.totalWeightKg.toFixed(2), '']);
-          rows.push(['Transport per container (EUR):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.transportPerContainerEUR.toFixed(2)} €`]);
-          rows.push(['Local charges total (AED):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.localChargesAED.toFixed(2)} AED`]);
-          rows.push(['Transport total (EUR):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.transportTotalEUR.toFixed(2)} €`]);
-
+          rows.push([
+            'Total Quantity:',
+            '',
+            shipping.totals.qty,
+            '',
+            `$${shipping.totals.totalAmountUSD.toFixed(2)}`,
+            '',
+            '',
+            `${shipping.totals.totalUpTrMargeEUR.toFixed(2)} EUR`,
+            `${shipping.totals.totalMarginEUR.toFixed(2)} EUR`,
+            '',
+            shipping.totals.totalWeightKg.toFixed(2),
+            ''
+          ]);
+          rows.push([
+            'Transport per container (EUR):',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            `${shipping.transportPerContainerEUR.toFixed(2)} EUR`
+          ]);
+          rows.push([
+            'Local charges total (AED):',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            `${shipping.localChargesAED.toFixed(2)} AED`
+          ]);
+          rows.push([
+            'Transport total (EUR):',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            `${shipping.transportTotalEUR.toFixed(2)} EUR`
+          ]);
           const csvContent = [headers.join(';'), ...rows.map((row) => row.join(';'))].join('\n');
           const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
           const link = document.createElement('a');
@@ -342,9 +349,18 @@
           document.body.removeChild(link);
         };
 
+        /* ── Row management ── */
         const addShippingRow = () => {
-          const nextNo = state.shippingProducts.length ? Math.max(...state.shippingProducts.map((item) => Number(item.no) || 0)) + 1 : 1;
-          state.shippingProducts.push({ no: nextNo, description: '', qty: 0, unitPriceUSD: 0, weightKg: 0 });
+          const nextNo = state.shippingProducts.length
+            ? Math.max(...state.shippingProducts.map((item) => Number(item.no) || 0)) + 1
+            : 1;
+          state.shippingProducts.push({
+            no: nextNo,
+            description: '',
+            qty: 0,
+            unitPriceUSD: 0,
+            weightKg: 0
+          });
           render();
         };
 
@@ -355,7 +371,9 @@
             field === 'description'
               ? rawValue
               : field === 'marginPercent'
-              ? rawValue === '' ? null : parseFloat(rawValue)
+              ? rawValue === ''
+                ? null
+                : parseFloat(rawValue)
               : parseFloat(rawValue) || 0;
           list[index] = { ...list[index], [field]: value };
           render();
@@ -363,7 +381,8 @@
 
         const updateGlobalField = (field, rawValue) => {
           if (numberFields.has(field)) {
-            const numericValue = field === 'containerCount' ? parseInt(rawValue, 10) : parseFloat(rawValue);
+            const numericValue =
+              field === 'containerCount' ? parseInt(rawValue, 10) : parseFloat(rawValue);
             state[field] = Number.isFinite(numericValue) ? numericValue : 0;
             if (field === 'containerCount' && state.containerCount < 1) state.containerCount = 1;
           } else {
@@ -373,31 +392,60 @@
         };
 
         const toggleCharge = (id) => {
-          state.localCharges = state.localCharges.map((charge) => (charge.id === id ? { ...charge, included: !charge.included } : charge));
+          state.localCharges = state.localCharges.map((charge) =>
+            charge.id === id ? { ...charge, included: !charge.included } : charge
+          );
           render();
         };
 
         const updateChargeAmount = (id, rawValue) => {
           const amount = parseFloat(rawValue);
-          state.localCharges = state.localCharges.map((charge) => (charge.id === id ? { ...charge, amountAED: Number.isFinite(amount) ? amount : 0 } : charge));
+          state.localCharges = state.localCharges.map((charge) =>
+            charge.id === id ? { ...charge, amountAED: Number.isFinite(amount) ? amount : 0 } : charge
+          );
           render();
         };
 
+        /* ── Focus management ── */
         const captureFocus = () => {
           const active = document.activeElement;
           if (!active) return null;
-          const isSelectableInput = active instanceof HTMLInputElement && active.type !== 'number' && active.type !== 'range' && active.type !== 'color' && active.type !== 'date';
+          const isSelectableInput =
+            active instanceof HTMLInputElement &&
+            active.type !== 'number' &&
+            active.type !== 'range' &&
+            active.type !== 'color' &&
+            active.type !== 'date';
           const selectionStart = isSelectableInput ? active.selectionStart : undefined;
           const selectionEnd = isSelectableInput ? active.selectionEnd : undefined;
           const rect = active.getBoundingClientRect();
           if (active.dataset?.field !== undefined && active.dataset?.index !== undefined) {
-            return { type: 'product', field: active.dataset.field, index: active.dataset.index, selectionStart, selectionEnd, offsetTop: rect.top };
+            return {
+              type: 'product',
+              field: active.dataset.field,
+              index: active.dataset.index,
+              selectionStart,
+              selectionEnd,
+              offsetTop: rect.top
+            };
           }
           if (active.dataset?.global) {
-            return { type: 'global', field: active.dataset.global, selectionStart, selectionEnd, offsetTop: rect.top };
+            return {
+              type: 'global',
+              field: active.dataset.global,
+              selectionStart,
+              selectionEnd,
+              offsetTop: rect.top
+            };
           }
           if (active.dataset?.chargeAmount) {
-            return { type: 'charge', id: active.dataset.chargeAmount, selectionStart, selectionEnd, offsetTop: rect.top };
+            return {
+              type: 'charge',
+              id: active.dataset.chargeAmount,
+              selectionStart,
+              selectionEnd,
+              offsetTop: rect.top
+            };
           }
           return null;
         };
@@ -446,6 +494,7 @@
           }
         };
 
+        /* ── Render ── */
         const render = () => {
           const previousScrollY = getScrollTop();
           const previousFocus = captureFocus();
@@ -457,39 +506,31 @@
           ]
             .map(
               (option) => `
-                <button
-                  data-action="set-distribution"
-                  data-mode="${option.id}"
-                  class="flex-1 px-3 py-2 rounded-md border text-sm ${
-                    state.distributionMode === option.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'
-                  }"
-                >
-                  ${option.label}
-                </button>
-              `
+              <button data-action="set-distribution" data-mode="${option.id}"
+                class="flex-1 px-3 py-2 rounded-md border text-sm ${
+                  state.distributionMode === option.id
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300'
+                }">
+                ${option.label}
+              </button>`
             )
             .join('');
 
           const localChargesRows = state.localCharges
             .map(
               (charge) => `
-                <tr class="border-t">
-                  <td class="border px-2 py-2 text-center">
-                    <input type="checkbox" data-charge-toggle="${charge.id}" ${charge.included ? 'checked' : ''} />
-                  </td>
-                  <td class="border px-2 py-2">${escapeHtml(charge.label)}</td>
-                  <td class="border px-2 py-2 text-right">
-                    <input
-                      type="number"
-                      step="0.01"
-                      class="w-28 px-2 py-1 border border-gray-200 rounded"
-                      value="${Number(charge.amountAED || 0)}"
-                      data-charge-amount="${charge.id}"
-                    />
-                  </td>
-                  <td class="border px-2 py-2 text-gray-500 text-xs">${escapeHtml(charge.note)}</td>
-                </tr>
-              `
+              <tr class="border-t">
+                <td class="border px-2 py-2 text-center">
+                  <input type="checkbox" data-charge-toggle="${charge.id}" ${charge.included ? 'checked' : ''} />
+                </td>
+                <td class="border px-2 py-2">${escapeHtml(charge.label)}</td>
+                <td class="border px-2 py-2 text-right">
+                  <input type="number" step="0.01" class="w-28 px-2 py-1 border border-gray-200 rounded"
+                    value="${Number(charge.amountAED || 0)}" data-charge-amount="${charge.id}" />
+                </td>
+                <td class="border px-2 py-2 text-gray-500 text-xs">${escapeHtml(charge.note)}</td>
+              </tr>`
             )
             .join('');
 
@@ -497,79 +538,54 @@
             <tr class="hover:bg-gray-50">
               <td class="border border-gray-300 px-2 py-2">${row.no ?? index + 1}</td>
               <td class="border border-gray-300 px-2 py-2 w-[36rem]">
-                <input
-                  type="text"
-                  value="${escapeHtml(row.description || '')}"
-                  data-index="${index}"
-                  data-field="description"
-                  class="w-full px-1 py-1 border border-gray-200 rounded"
-                />
+                <input type="text" value="${escapeHtml(row.description || '')}"
+                  data-index="${index}" data-field="description"
+                  class="w-full px-1 py-1 border border-gray-200 rounded" />
               </td>
               <td class="border border-gray-300 px-2 py-2 text-center">
-                <input
-                  type="number"
-                  value="${row.qty}"
-                  data-index="${index}"
-                  data-field="qty"
-                  class="w-16 px-1 py-1 text-center border border-gray-200 rounded"
-                />
+                <input type="number" value="${row.qty}"
+                  data-index="${index}" data-field="qty"
+                  class="w-16 px-1 py-1 text-center border border-gray-200 rounded" />
               </td>
               <td class="border border-gray-300 px-2 py-2 text-right w-24">
-                <input
-                  type="number"
-                  step="0.01"
-                  value="${Number(row.weightKg || 0)}"
-                  data-index="${index}"
-                  data-field="weightKg"
-                  class="w-16 px-1 py-1 text-right border border-gray-200 rounded"
-                />
+                <input type="number" step="0.01" value="${Number(row.weightKg || 0)}"
+                  data-index="${index}" data-field="weightKg"
+                  class="w-16 px-1 py-1 text-right border border-gray-200 rounded" />
               </td>
               <td class="border border-gray-300 px-2 py-2 text-right w-24">
-                <input
-                  type="number"
-                  step="0.01"
-                  value="${Number(row.unitPriceUSD || 0)}"
-                  data-index="${index}"
-                  data-field="unitPriceUSD"
-                  class="w-20 px-1 py-1 text-right border border-gray-200 rounded"
-                />
+                <input type="number" step="0.01" value="${Number(row.unitPriceUSD || 0)}"
+                  data-index="${index}" data-field="unitPriceUSD"
+                  class="w-20 px-1 py-1 text-right border border-gray-200 rounded" />
               </td>
               <td class="border border-gray-300 px-2 py-2 text-right font-medium">$${formatNumber(row.totalAmountUSD)}</td>
               <td class="border border-gray-300 px-2 py-2 text-right w-40">
                 <div class="flex flex-col items-end leading-tight">
                   <span class="text-blue-700 font-semibold">$${formatNumber(row.unitPriceUSD)}</span>
-                  <span class="text-xs text-gray-500">${formatNumber(row.upEUR)} €</span>
+                  <span class="text-xs text-gray-500">${formatNumber(row.upEUR)} &euro;</span>
                 </div>
               </td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-600">${formatNumber(row.upTrMargeEURUnit)} €</td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-700">${formatNumber(row.totalUpTrMargeEUR)} €</td>
+              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-600">${formatNumber(row.upTrMargeEURUnit)} &euro;</td>
+              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-700">${formatNumber(row.totalUpTrMargeEUR)} &euro;</td>
               <td class="border border-gray-300 px-2 py-2 w-28">
                 <div class="flex items-center justify-end gap-1 text-purple-600 whitespace-nowrap">
-                  <span>${formatNumber(row.marginEURUnit)}</span>
-                  <span>€</span>
+                  <span>${formatNumber(row.marginEURUnit)}</span><span>&euro;</span>
                 </div>
               </td>
               <td class="border border-gray-300 px-2 py-2">
                 <div class="flex items-center justify-end gap-1 text-purple-700 font-medium whitespace-nowrap">
-                  <span>${formatNumber(row.totalMarginEUR)}</span>
-                  <span>€</span>
+                  <span>${formatNumber(row.totalMarginEUR)}</span><span>&euro;</span>
                 </div>
               </td>
               <td class="border border-gray-300 px-2 py-2 text-center w-28">
-                <input
-                  type="number"
-                  step="0.1"
+                <input type="number" step="0.1"
                   placeholder="${formatNumber(state.marginPercent, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}"
                   value="${row.marginPercent ?? ''}"
-                  data-index="${index}"
-                  data-field="marginPercent"
-                  class="w-24 px-1 py-1 text-right border border-gray-200 rounded"
-                />
+                  data-index="${index}" data-field="marginPercent"
+                  class="w-24 px-1 py-1 text-right border border-gray-200 rounded" />
               </td>
-            </tr>
-          `;
+            </tr>`;
 
-        const renderTotalsRow = (totals, totalWeightText = '') => `
+          const renderTotalsRow = (totals, totalWeightText = '') => `
             <tr class="bg-yellow-50 font-bold">
               <td colspan="2" class="border border-gray-300 px-2 py-2">TOTAL</td>
               <td class="border border-gray-300 px-2 py-2 text-center">${totals.qty}</td>
@@ -578,67 +594,121 @@
               <td class="border border-gray-300 px-2 py-2 text-right text-lg">$${formatNumber(totals.totalAmountUSD)}</td>
               <td class="border border-gray-300 px-2 py-2"></td>
               <td class="border border-gray-300 px-2 py-2"></td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-700">${formatNumber(totals.totalUpTrMargeEUR)} €</td>
+              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-700">${formatNumber(totals.totalUpTrMargeEUR)} &euro;</td>
               <td class="border border-gray-300 px-2 py-2"></td>
-              <td class="border border-gray-300 px-2 py-2 text-right text-purple-600">${formatNumber(totals.totalMarginEUR)} €</td>
+              <td class="border border-gray-300 px-2 py-2 text-right text-purple-600">${formatNumber(totals.totalMarginEUR)} &euro;</td>
               <td class="border border-gray-300 px-2 py-2"></td>
-            </tr>
-          `;
+            </tr>`;
 
           app.innerHTML = `
             <div class="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 space-y-6">
+              <!-- Header -->
               <div class="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-                <h1 class="text-2xl font-bold text-gray-800">Tableau de Prix Huawei - Inverters & Accessories (24 ADAR)</h1>
+                <h1 class="text-2xl font-bold text-gray-800">Tableau de Prix Huawei - Inverters &amp; Accessories (24 ADAR)</h1>
                 <div class="flex gap-2">
                   <button data-action="add-row" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                     + Ajouter une ligne
                   </button>
                   <button data-action="download-csv" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    ⬇ Télécharger CSV
+                    &#11015; T&eacute;l&eacute;charger CSV
                   </button>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Taux de Change (EUR/USD)</label>
-                  <input type="number" step="0.0001" value="${state.exchangeRate}" data-global="exchangeRate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Taux AED ➜ USD</label>
-                  <input type="number" step="0.0001" value="${state.aedToUsdRate}" data-global="aedToUsdRate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Fret GEODIS Europe (EUR / conteneur)</label>
-                  <input type="number" step="0.01" value="${state.freightQuoteEUR}" data-global="freightQuoteEUR" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de conteneurs</label>
-                  <input type="number" min="1" step="1" value="${state.containerCount}" data-global="containerCount" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+              <!-- Shipment info banner -->
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h2 class="text-sm font-semibold text-blue-800 mb-2">&#128230; D&eacute;tails Exp&eacute;dition &mdash; GEODIS (R&eacute;f. ${escapeHtml(state.shipmentRef)})</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                  <div>
+                    <span class="text-blue-600 font-medium">Poids total</span>
+                    <p class="text-gray-900 font-semibold">${formatNumber(state.shipmentWeight)} kg</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Colis</span>
+                    <p class="text-gray-900 font-semibold">${state.shipmentPackages} PKG</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Conteneur</span>
+                    <p class="text-gray-900 font-semibold">${escapeHtml(state.shipmentContainer)}</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Navire</span>
+                    <p class="text-gray-900 font-semibold">${escapeHtml(state.shipmentVessel)}</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Origine</span>
+                    <p class="text-gray-900">${escapeHtml(state.shipmentOrigin)}</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Destination</span>
+                    <p class="text-gray-900">${escapeHtml(state.shipmentDestination)}</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Facture Transport</span>
+                    <p class="text-gray-900">ANG49159 &mdash; ${formatNumber(state.freightQuoteEUR)} &euro; HT</p>
+                  </div>
+                  <div>
+                    <span class="text-blue-600 font-medium">Facture Douane</span>
+                    <p class="text-gray-900">ANG49160 &mdash; ${formatNumber(state.customsCostsEUR)} &euro;</p>
+                  </div>
                 </div>
               </div>
 
+              <!-- Global parameters -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Taux de Change (EUR/USD)</label>
+                  <input type="number" step="0.0001" value="${state.exchangeRate}" data-global="exchangeRate"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Taux AED &rarr; USD</label>
+                  <input type="number" step="0.0001" value="${state.aedToUsdRate}" data-global="aedToUsdRate"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Fret GEODIS (EUR / conteneur)</label>
+                  <input type="number" step="0.01" value="${state.freightQuoteEUR}" data-global="freightQuoteEUR"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+                  <p class="text-xs text-gray-400 mt-1">Fact. ANG49159 HT</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">D&eacute;douanement (EUR / conteneur)</label>
+                  <input type="number" step="0.01" value="${state.customsCostsEUR}" data-global="customsCostsEUR"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+                  <p class="text-xs text-gray-400 mt-1">Fact. ANG49160 (droits + port + taxes)</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de conteneurs</label>
+                  <input type="number" min="1" step="1" value="${state.containerCount}" data-global="containerCount"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+                </div>
+              </div>
+
+              <!-- Summary cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Coût Transport Total (EUR)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Co&ucirc;t Transport Total (EUR)</label>
                   <div class="w-full px-3 py-2 border border-dashed border-gray-300 rounded-md bg-gray-50 font-semibold">
-                    ${formatNumber(shipping.transportTotalEUR)} €
+                    ${formatNumber(shipping.transportTotalEUR)} &euro;
                   </div>
-                  <p class="text-xs text-gray-500 mt-1">Inclut fret + préparation Dubai × conteneurs</p>
+                  <p class="text-xs text-gray-500 mt-1">Dubai + fret GEODIS + d&eacute;douanement &times; conteneurs</p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Marge (%)</label>
-                  <input type="number" step="0.1" value="${state.marginPercent}" data-global="marginPercent" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
+                  <input type="number" step="0.1" value="${state.marginPercent}" data-global="marginPercent"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Version du calcul</label>
                   <div class="flex gap-2">${distributionButtons}</div>
-                  <p class="text-xs text-gray-500 mt-1">Version 3 · Multi-conteneurs = ajuster le nombre de conteneurs</p>
+                  <p class="text-xs text-gray-500 mt-1">Version 3 &middot; Multi-conteneurs = ajuster le nombre de conteneurs</p>
                 </div>
               </div>
 
+              <!-- Dubai charges -->
               <div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-2">Frais de préparation Geodis Dubai (AED)</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">Frais de pr&eacute;paration Geodis Dubai (AED)</h2>
                 <div class="overflow-x-auto">
                   <table class="w-full border border-gray-200 text-sm">
                     <thead class="bg-gray-100">
@@ -654,11 +724,14 @@
                 </div>
                 <div class="flex flex-wrap gap-4 text-sm text-gray-600 mt-3">
                   <span>Total charges Dubai: <strong>${formatNumber(shipping.localChargesAED)} AED</strong></span>
-                  <span>≈ ${formatNumber(shipping.localChargesEUR)} €</span>
-                  <span>Transport / conteneur: <strong>${formatNumber(shipping.transportPerContainerEUR)} €</strong></span>
+                  <span>&asymp; ${formatNumber(shipping.localChargesEUR)} &euro;</span>
+                  <span>Fret GEODIS: <strong>${formatNumber(state.freightQuoteEUR)} &euro;</strong></span>
+                  <span>D&eacute;douanement: <strong>${formatNumber(state.customsCostsEUR)} &euro;</strong></span>
+                  <span class="text-gray-900 font-semibold">Transport / conteneur: ${formatNumber(shipping.transportPerContainerEUR)} &euro;</span>
                 </div>
               </div>
 
+              <!-- Products table -->
               <div class="overflow-x-auto">
                 <table class="w-full border-collapse text-sm">
                   <thead>
@@ -669,7 +742,7 @@
                       <th class="border border-gray-300 px-2 py-2 text-right w-24">Poids (kg/u)</th>
                       <th class="border border-gray-300 px-2 py-2 text-right w-24">UNIT PRICE (USD)</th>
                       <th class="border border-gray-300 px-2 py-2 text-right">TOTAL (USD)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right w-44">UP USD ➜ EUR</th>
+                      <th class="border border-gray-300 px-2 py-2 text-right w-44">UP USD &rarr; EUR</th>
                       <th class="border border-gray-300 px-2 py-2 text-right">UP+TR+Mg (EUR)</th>
                       <th class="border border-gray-300 px-2 py-2 text-right">TOTAL UP+TR+Mg (EUR)</th>
                       <th class="border border-gray-300 px-2 py-2 text-right w-28">Marge (EUR/u)</th>
@@ -684,38 +757,40 @@
                 </table>
               </div>
 
+              <!-- Bottom cards -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Version 1 · Coût transport moyen / unité</p>
+                  <p class="text-sm text-gray-600">Version 1 &middot; Co&ucirc;t transport moyen / unit&eacute;</p>
                   <p class="text-2xl font-semibold text-gray-900">$${formatNumber(shipping.averageTransportPerUnitUSD)}</p>
                 </div>
                 <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Version 2 · Poids total déclaré</p>
+                  <p class="text-sm text-gray-600">Version 2 &middot; Poids total d&eacute;clar&eacute;</p>
                   <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipping.totalWeightKg)} kg</p>
                 </div>
                 <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Version 3 · Coût total multi-conteneurs</p>
-                  <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipping.transportTotalEUR)} €</p>
-                  <p class="text-xs text-gray-500">${state.containerCount} × ${formatNumber(shipping.transportPerContainerEUR)} €</p>
+                  <p class="text-sm text-gray-600">Version 3 &middot; Co&ucirc;t total multi-conteneurs</p>
+                  <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipping.transportTotalEUR)} &euro;</p>
+                  <p class="text-xs text-gray-500">${state.containerCount} &times; ${formatNumber(shipping.transportPerContainerEUR)} &euro;</p>
                 </div>
               </div>
 
               <div class="mt-2 text-xs text-gray-500">
-                Poids préremplis lorsqu’ils figurent dans les packing-lists ALSASOLAR (sinon compléter manuellement).
+                Poids pr&eacute;remplis lorsqu'ils figurent dans les packing-lists ALSASOLAR (sinon compl&eacute;ter manuellement).
               </div>
 
+              <!-- Formulas -->
               <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 class="font-semibold mb-2">Formules utilisées:</h3>
+                <h3 class="font-semibold mb-2">Formules utilis&eacute;es:</h3>
                 <ul class="text-sm text-gray-700 space-y-1">
-                  <li><strong>TOTAL AMOUNT (USD):</strong> QTY × UNIT PRICE (USD)</li>
-                  <li><strong>UP USD ➜ EUR :</strong> UNIT PRICE (USD) + conversion EUR affichée en dessous</li>
-                  <li><strong>UP+TR+Mg (EUR):</strong> (UNIT PRICE + part transport USD) × Taux × (1 + Marge %)</li>
-                  <li><strong>TOTAL UP+TR+Mg (EUR):</strong> UP+TR+Mg (EUR) × QTY</li>
+                  <li><strong>TOTAL AMOUNT (USD):</strong> QTY &times; UNIT PRICE (USD)</li>
+                  <li><strong>UP USD &rarr; EUR :</strong> UNIT PRICE (USD) + conversion EUR affich&eacute;e en dessous</li>
+                  <li><strong>UP+TR+Mg (EUR):</strong> (UNIT PRICE + part transport USD) &times; Taux &times; (1 + Marge %)</li>
+                  <li><strong>TOTAL UP+TR+Mg (EUR):</strong> UP+TR+Mg (EUR) &times; QTY</li>
+                  <li><strong>Transport / conteneur:</strong> Frais Dubai (AED&rarr;EUR) + Fret GEODIS (EUR) + D&eacute;douanement (EUR)</li>
                 </ul>
-                <p class="text-xs text-gray-500 mt-2">Version 3 applique automatiquement les coûts Dubai + GEODIS sur chaque conteneur sélectionné.</p>
+                <p class="text-xs text-gray-500 mt-2">Version 3 applique automatiquement les co&ucirc;ts Dubai + GEODIS + D&eacute;douanement sur chaque conteneur s&eacute;lectionn&eacute;.</p>
               </div>
-            </div>
-          `;
+            </div>`;
 
           requestAnimationFrame(() => {
             setScrollTop(previousScrollY);
@@ -723,6 +798,7 @@
           });
         };
 
+        /* ── Event listeners ── */
         document.addEventListener('input', (event) => {
           const target = event.target;
           if (target.dataset?.global) {
