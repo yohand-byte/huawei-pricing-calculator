@@ -1,763 +1,778 @@
 <!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Huawei Pricing Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      body {
-        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      }
-      table input::-webkit-outer-spin-button,
-      table input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      table input[type='number'] {
-        -moz-appearance: textfield;
-      }
-    </style>
-  </head>
-  <body class="bg-gray-100">
-    <div id="auth-overlay" class="fixed inset-0 hidden items-center justify-center bg-gray-900/80 z-50 px-4">
-      <div class="max-w-md w-full bg-white rounded-lg shadow-xl p-6 space-y-4">
-        <div>
-          <p class="text-sm uppercase tracking-wide text-gray-500 font-semibold">Accès sécurisé</p>
-          <h1 class="text-2xl font-bold text-gray-900 mt-1">Huawei Pricing Calculator</h1>
-          <p class="text-sm text-gray-500 mt-1">Entre le mot de passe partagé pour afficher le tableau.</p>
-        </div>
-        <form id="auth-form" class="space-y-3">
-          <div>
-            <label class="text-sm font-medium text-gray-700 mb-1 block" for="auth-password">Mot de passe</label>
-            <input
-              id="auth-password"
-              type="password"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="********"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Déverrouiller
-          </button>
-          <p id="auth-error" class="text-sm text-red-600 hidden">Mot de passe incorrect.</p>
-        </form>
-        <p class="text-xs text-gray-400 text-center">Accès réservé à l'équipe Huawei / ADAR.</p>
-      </div>
-    </div>
+<html style="height: 100%;">
+<head>
+	<title>Accueil</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
 
-    <div id="protected-root" class="hidden">
-      <div id="app" class="min-h-screen p-4"></div>
-    </div>
+	<!-- FAVICON -->
+	<link rel="icon" type="image/png" href="https://www.engagees-determinees.org/assets/front/img/favicon.png" />
 
-    <script>
-      (function () {
-        const PASSWORD_HASH = '385117e3b457a5f3408ab8b2086a5b5dee159fe61c474d0297fa65cd229e52f7';
-        const STORAGE_KEY = 'huaweiPricingAuth';
-        const overlay = document.getElementById('auth-overlay');
-        const container = document.getElementById('protected-root');
-        const form = document.getElementById('auth-form');
-        const input = document.getElementById('auth-password');
-        const error = document.getElementById('auth-error');
+	<!--[if (gte IE 6)&(lte IE 8)]>
+	<script type="text/javascript" src="https://www.engagees-determinees.org/assets/front/js/selectivizr-min.js"></script>
+	<![endif]-->
 
-        const toHex = (buffer) => Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
-        const sha256 = async (text) => {
-          const data = new TextEncoder().encode(text);
-          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-          return toHex(hashBuffer);
-        };
+	<!-- web-font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet" type="text/css">
+	<!-- css -->
+	<link rel="stylesheet" href="https://www.engagees-determinees.org/assets/front/css/styles.min.css?v=1.2">
 
-        const unlock = () => {
-          overlay.classList.add('hidden');
-          container.classList.remove('hidden');
-          error.classList.add('hidden');
-          input.value = '';
-        };
+	 <!--[if IE 8]>
+	<link rel="stylesheet" media="all" href="https://www.engagees-determinees.org/assets/front/css/override.css" />
+	<![endif]-->
 
-        const checkStored = () => {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved === PASSWORD_HASH) {
-            unlock();
-            return true;
-          }
-          overlay.classList.remove('hidden');
-          return false;
-        };
+	 <!--[if IE 7]>
+	<script type="text/javascript" src="https://www.engagees-determinees.org/assets/front/js/ie7.js"></script>
+	<link type="text/css" rel="stylesheet" href="https://www.engagees-determinees.org/assets/front/css/ie7.css" />
+	<![endif]-->
 
-        checkStored();
+         <!-- Matomo -->
+        <script type="text/javascript">
+          var _paq = window._paq || [];
+          / tracker methods like "setCustomDimension" should be called before "trackPageView" /
+          _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+          _paq.push(["setCookieDomain", ".www.engagees-determinees.org"]);
+          _paq.push(["setDomains", [".www.engagees-determinees.org"]]);
+          _paq.push(["setDoNotTrack", true]);
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          (function() {
+            var u="https://analytics.animafac.net/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '16']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+          })();
+        </script>
+        <noscript><p><img src="https://analytics.animafac.net/matomo.php?idsite=16&rec=1" style="border:0;" alt="" /></p></noscript>
+        <!-- End Matomo Code -->
+</head>
 
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const attempt = input.value.trim();
-          if (!attempt) return;
-          const hash = await sha256(attempt);
-          if (hash === PASSWORD_HASH) {
-            localStorage.setItem(STORAGE_KEY, PASSWORD_HASH);
-            unlock();
-          } else {
-            error.classList.remove('hidden');
-          }
-        });
-      })();
-    </script>
+<body>
 
-    <script>
-      (() => {
-        const defaultLocalCharges = [
-          { id: 'thc40', label: "THC - Terminal Handling Charge (40' DV/HC)", amountAED: 1100, note: 'Par conteneur', included: true },
-          { id: 'tluc', label: 'TLUC – Truck Load/Unload Charge', amountAED: 314, note: 'Par conteneur', included: true },
-          { id: 'vgm', label: 'VGM Charges', amountAED: 65, note: 'Par conteneur', included: true },
-          { id: 'token', label: 'Token Charges', amountAED: 50, note: 'Par conteneur', included: true },
-          { id: 'seal', label: 'Seal Charges', amountAED: 40, note: 'Par conteneur', included: true },
-          { id: 'transport', label: 'Transportation charges', amountAED: 400, note: 'Par trajet', included: true },
-          { id: 'dpc', label: 'DPC', amountAED: 110, note: 'Par document', included: true },
-          { id: 'blFee', label: 'BL Fee', amountAED: 575, note: 'Par BL', included: true },
-          { id: 'edFee', label: 'ED Fee', amountAED: 120, note: 'Par déclaration', included: true },
-          { id: 'inspection', label: 'Inspection Fee (optionnel)', amountAED: 170, note: 'Optionnel', included: false },
-          { id: 'exitEntry', label: 'Exit / Entry Fee (optionnel)', amountAED: 70, note: 'Optionnel', included: false },
-          { id: 'customSeal', label: 'Customs Seal (optionnel)', amountAED: 20, note: 'Optionnel', included: false }
-        ];
+	<!-- TOP OF PAGE -->
+	<div id="top"></div>
 
-        const defaultWeights = {
-          'SUN2000-100KTL-M2 (AFCI)': 98.5,
-          'SUN2000-30KTL-M3': 43,
-          'SUN2000-5KTL-MAP0': 21,
-          'SUN2000-6KTL-MAP0': 21,
-          'SUN2000-8KTL-MAP0': 21,
-          'SUN2000-10KTL-MAP0': 21,
-          'SUN2000-12KTL-MAP0': 21,
-          'SUN2000-8K-LC0': 22,
-          'SUN2000-10K-LC0': 19.3,
-          'SUN2000-12K-MB0': 29,
-          'SUN2000-15K-MB0': 29,
-          'SUN2000-17K-MB0': 29,
-          'SUN2000-20K-MB0': 22,
-          'SUN2000-25K-MB0': 25,
-          'Luna2000-5kw-c0 Power module,5kw (BMS)': 13.21,
-          'Luna2000-5-E0 Battery module,5kwh': 50,
-          'Optimazer MERC-1300-P(Long input cable)': 1.21,
-          'Smart dongle SDongleA-05': 0.126,
-          'Smart dongle SdongleB-06-EU': 0.163,
-          'SCharger-7KS-S0': 2,
-          'SCharger-22KT-S0': 2,
-          'SmartPS-80AI-T0 Three-phase intelligent sensor': 0.96,
-          'SmartPS-250A-T0 Three-phase intelligent sensor': 1.5,
-          'SmartPS-100A-S0 Single-phase smart meter': 1.211,
-          'DDSU666-H Single-phase smart meter': 1.211,
-          'DTSU666-H 100A(Three Phase)': 1.211,
-          'SmartGuard-63A-S0 63A Single Phase Backup Box': 21.24,
-          'SmartGuard-63A-T0 63A Three Phase Backup Box': 25.1,
-          'EMMA-A02 Energy Management Assistant': 1.25
-        };
 
-        const shippingProductsSeed = [
-          { no: 1, description: 'SUN2000-100KTL-M2 (AFCI)', qty: 1, unitPriceUSD: 3333, weightKg: defaultWeights['SUN2000-100KTL-M2 (AFCI)'] || 0, marginPercent: null },
-          { no: 2, description: 'SUN2000-30KTL-M3', qty: 4, unitPriceUSD: 1442, weightKg: defaultWeights['SUN2000-30KTL-M3'] || 0, marginPercent: null },
-          { no: 3, description: 'SUN2000-6KTL-L1', qty: 6, unitPriceUSD: 471, weightKg: 0, marginPercent: null },
-          { no: 4, description: 'SUN2000-8K-LC0', qty: 10, unitPriceUSD: 633, weightKg: defaultWeights['SUN2000-8K-LC0'] || 0, marginPercent: null },
-          { no: 5, description: 'SUN2000-10K-LC0', qty: 10, unitPriceUSD: 694, weightKg: defaultWeights['SUN2000-10K-LC0'] || 0, marginPercent: null },
-          { no: 6, description: 'SUN2000-5KTL-MAP0', qty: 10, unitPriceUSD: 700, weightKg: defaultWeights['SUN2000-5KTL-MAP0'] || 0, marginPercent: null },
-          { no: 7, description: 'SUN2000-6KTL-MAP0', qty: 10, unitPriceUSD: 711, weightKg: defaultWeights['SUN2000-6KTL-MAP0'] || 0, marginPercent: null },
-          { no: 8, description: 'SUN2000-8KTL-MAP0', qty: 10, unitPriceUSD: 844, weightKg: defaultWeights['SUN2000-8KTL-MAP0'] || 0, marginPercent: null },
-          { no: 9, description: 'SUN2000-10KTL-MAP0', qty: 10, unitPriceUSD: 944, weightKg: defaultWeights['SUN2000-10KTL-MAP0'] || 0, marginPercent: null },
-          { no: 10, description: 'SUN2000-12KTL-MAP0', qty: 10, unitPriceUSD: 1056, weightKg: defaultWeights['SUN2000-12KTL-MAP0'] || 0, marginPercent: null },
-          { no: 11, description: 'SUN2000-12K-MB0', qty: 10, unitPriceUSD: 1317, weightKg: defaultWeights['SUN2000-12K-MB0'] || 0, marginPercent: null },
-          { no: 12, description: 'SUN2000-15K-MB0', qty: 10, unitPriceUSD: 1489, weightKg: defaultWeights['SUN2000-15K-MB0'] || 0, marginPercent: null },
-          { no: 13, description: 'SUN2000-17K-MB0', qty: 10, unitPriceUSD: 1517, weightKg: defaultWeights['SUN2000-17K-MB0'] || 0, marginPercent: null },
-          { no: 14, description: 'SUN2000-20K-MB0', qty: 10, unitPriceUSD: 1600, weightKg: defaultWeights['SUN2000-20K-MB0'] || 0, marginPercent: null },
-          { no: 15, description: 'SUN2000-25K-MB0', qty: 10, unitPriceUSD: 1656, weightKg: defaultWeights['SUN2000-25K-MB0'] || 0, marginPercent: null },
-          { no: 16, description: 'Luna2000-5kw-c0 Power module,5kw (BMS)', qty: 50, unitPriceUSD: 513, weightKg: defaultWeights['Luna2000-5kw-c0 Power module,5kw (BMS)'] || 0, marginPercent: null },
-          { no: 17, description: 'Luna2000-5-E0 Battery module,5kwh', qty: 80, unitPriceUSD: 1261, weightKg: defaultWeights['Luna2000-5-E0 Battery module,5kwh'] || 0, marginPercent: null },
-          { no: 18, description: 'Optimazer MERC-1300-P(Long input cable)', qty: 100, unitPriceUSD: 66, weightKg: defaultWeights['Optimazer MERC-1300-P(Long input cable)'] || 0, marginPercent: null },
-          { no: 19, description: 'Smart dongle SDongleA-05', qty: 30, unitPriceUSD: 41, weightKg: defaultWeights['Smart dongle SDongleA-05'] || 0, marginPercent: null },
-          { no: 20, description: 'Smart dongle SdongleB-06-EU', qty: 10, unitPriceUSD: 98, weightKg: defaultWeights['Smart dongle SdongleB-06-EU'] || 0, marginPercent: null },
-          { no: 21, description: 'SCharger-7KS-S0', qty: 10, unitPriceUSD: 333, weightKg: defaultWeights['SCharger-7KS-S0'] || 0, marginPercent: null },
-          { no: 22, description: 'SCharger-22KT-S0', qty: 10, unitPriceUSD: 354, weightKg: defaultWeights['SCharger-22KT-S0'] || 0, marginPercent: null },
-          { no: 23, description: 'SmartPS-80AI-T0 Three-phase intelligent sensor', qty: 10, unitPriceUSD: 66, weightKg: defaultWeights['SmartPS-80AI-T0 Three-phase intelligent sensor'] || 0, marginPercent: null },
-          { no: 24, description: 'DTSU666-H250A/50mA Three-phase intelligent sensor', qty: 10, unitPriceUSD: 62, weightKg: defaultWeights['DTSU666-H250A/50mA Three-phase intelligent sensor'] || 0, marginPercent: null },
-          { no: 25, description: 'SmartPS-250A-T0 Three-phase intelligent sensor', qty: 10, unitPriceUSD: 62, weightKg: defaultWeights['SmartPS-250A-T0 Three-phase intelligent sensor'] || 0, marginPercent: null },
-          { no: 26, description: 'SmartPS-100A-S0 Single-phase smart meter', qty: 10, unitPriceUSD: 41, weightKg: defaultWeights['SmartPS-100A-S0 Single-phase smart meter'] || 0, marginPercent: null },
-          { no: 27, description: 'DDSU666-H Single-phase smart meter', qty: 10, unitPriceUSD: 41, weightKg: defaultWeights['DDSU666-H Single-phase smart meter'] || 0, marginPercent: null },
-          { no: 28, description: 'DTSU666-H 100A(Three Phase)', qty: 10, unitPriceUSD: 66, weightKg: defaultWeights['DTSU666-H 100A(Three Phase)'] || 0, marginPercent: null },
-          { no: 29, description: 'SmartGuard-63A-S0 63A Single Phase Backup Box', qty: 5, unitPriceUSD: 458, weightKg: defaultWeights['SmartGuard-63A-S0 63A Single Phase Backup Box'] || 0, marginPercent: null },
-          { no: 30, description: 'SmartGuard-63A-T0 63A Three Phase Backup Box', qty: 5, unitPriceUSD: 619, weightKg: defaultWeights['SmartGuard-63A-T0 63A Three Phase Backup Box'] || 0, marginPercent: null },
-          { no: 31, description: 'EMMA-A02 Energy Management Assistant', qty: 5, unitPriceUSD: 267, weightKg: defaultWeights['EMMA-A02 Energy Management Assistant'] || 0, marginPercent: null }
-        ];
+			<!-- RESPONSIVE NAVIGATION -->
+		<nav class="side-nav" id="responsive_menu">
+			<ul class="">
+				<li class="bg_orange">
+											<a href="https://www.engagees-determinees.org/adherer" class="ease_in_out">Adh&eacute;rer au r&eacute;seau</a>
+									</li>
+				<li class="bg_orange">
+											<a href="https://www.engagees-determinees.org/connexion" class="ease_in_out">Se connecter</a>
+									</li>
+															<li class="has_child">
+							<a  href="https://www.engagees-determinees.org/notre-vision" class="ease_in_out">
+								Qui sommes-nous ?							</a>
+															<ul class="second_level">
+																				<li>
+												<a  href="https://www.engagees-determinees.org/notre-vision" class="ease_in_out">
+													E&D, c'est quoi ?												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/notre-equipe" class="ease_in_out">
+													Notre équipe												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/instancesdegouvernance" class="ease_in_out">
+													Nos instances de gouvernance												</a>
+											</li>
+																	</ul>
+													</li>
+											<li class="has_child">
+							<a  href="https://www.engagees-determinees.org/nos-actions" class="ease_in_out">
+								Nos missions							</a>
+															<ul class="second_level">
+																				<li>
+												<a  href="https://www.engagees-determinees.org/accompagnement" class="ease_in_out">
+													Accompagnement et formation												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/porter-la-voix-des-jeunes" class="ease_in_out">
+													Porter la voix des jeunes												</a>
+											</li>
+																	</ul>
+													</li>
+											<li class="has_child">
+							<a  href="https://www.engagees-determinees.org/notrereseau" class="ease_in_out">
+								Notre reseau							</a>
+															<ul class="second_level">
+																				<li>
+												<a  href="https://www.engagees-determinees.org/laviedureseau" class="ease_in_out">
+													La vie du réseau												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/actuasso" class="ease_in_out">
+													Dans l'actu des assos												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/missions-international" class="ease_in_out">
+													E&D à l'international												</a>
+											</li>
+																	</ul>
+													</li>
+											<li class="has_child">
+							<a  href="https://www.engagees-determinees.org/actualites" class="ease_in_out">
+								Actus							</a>
+															<ul class="second_level">
+																				<li>
+												<a  href="https://www.engagees-determinees.org/tous-les-evenements" class="ease_in_out">
+													Nos evenements												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/articles" class="ease_in_out">
+													Articles												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/les-petites-annonces" class="ease_in_out">
+													Petites annonces												</a>
+											</li>
+																	</ul>
+													</li>
+											<li >
+							<a  href="https://www.engagees-determinees.org/outils" class="ease_in_out">
+								Outils							</a>
+													</li>
+											<li class="has_child">
+							<a  href="https://www.engagees-determinees.org/nos-partenaires" class="ease_in_out">
+								partenariats							</a>
+															<ul class="second_level">
+																				<li>
+												<a  href="https://www.engagees-determinees.org/nos-partenaires" class="ease_in_out">
+													Nos partenaires												</a>
+											</li>
+																				<li>
+												<a  href="https://www.engagees-determinees.org/ideas" class="ease_in_out">
+													Label IDEAS												</a>
+											</li>
+																	</ul>
+													</li>
+													<li>
+					<form action="https://www.engagees-determinees.org/recherche" class="search_bar" method="get">
+						<div class="input-group">
+							<input type="text" class="form-control bar_input" name="q" placeholder="texte à rechercher..." />
+							<button type="submit" class="btn picto icon-search white ease_in_out"></button>
+						</div>
+					</form>
+				</li>
+			</ul>
+		</nav>
+		<!-- END RESPONSIVE NAVIGATION -->
+	
+	<!-- MAIN CONTENT -->
+	<div class="main-content">
 
-        const state = {
-          exchangeRate: 0.8566,
-          freightQuoteEUR: 4437.37,
-          containerCount: 1,
-          aedToUsdRate: 3.6725,
-          marginPercent: 30,
-          distributionMode: 'unit',
-          localCharges: JSON.parse(JSON.stringify(defaultLocalCharges)),
-          shippingProducts: JSON.parse(JSON.stringify(shippingProductsSeed))
-        };
+	<!-- HEADER -->
+	<header id="header" class="bg_white">
+		<div class="wrapper">
+			<a class="menu nav-trigger ease_in_out" href="#"><span>menu</span></a>
+			<a class="header_logo logo" href="https://www.engagees-determinees.org/" style="background-image: url('https://www.engagees-determinees.org/assets/front/img/ED_logo.png');">
+			</a>
+			<nav class="right_menu">
 
-        const app = document.getElementById('app');
+				<ul class="header_list">
+					<li class="menu_header">
+													<a href="https://www.engagees-determinees.org/adherer" class="menu_nav_link ease_in_out">
+								<div class="picto icon-flag"></div>
+								<div class="menu_header_text">adhérer&nbsp;au&nbsp;reseau</div>
+							</a>
+											</li>
+					<li style="display: none;" class="menu_header">
+													<a href="https://www.engagees-determinees.org/connexion" class="menu_nav_link ease_in_out">
+								<div class="picto icon-user2"></div>
+								<div class="menu_header_text">se&nbsp;connecter</div>
+							</a>
+											</li>
+				</ul>
 
-        const numberFields = new Set(['exchangeRate', 'freightQuoteEUR', 'containerCount', 'aedToUsdRate', 'marginPercent']);
+									<ul class="social_list">
+													<li class="menu_social">
+								<a class="picto icon-youtube22 ease_in_out" target="_blank" href="https://www.youtube.com/user/etudiantsetdev"></a>
+							</li>
+													<li class="menu_social">
+								<a class="picto icon-twitter3 ease_in_out" target="_blank" href="https://twitter.com/EngageesD"></a>
+							</li>
+													<li class="menu_social">
+								<a class="picto icon-instagram ease_in_out" target="_blank" href="https://www.instagram.com/engageesdeterminees/"></a>
+							</li>
+													<li class="menu_social">
+								<a class="picto icon-facebook3 ease_in_out" target="_blank" href="https://www.facebook.com/EngageesDeterminees"></a>
+							</li>
+											</ul>
+				
+				<div class="toggle_bar">
+					<a href="#" class="bar_trigger picto icon-search ease_in_out"></a>
+					<div class="widget_bar">
+						<form id="search_bar" action="https://www.engagees-determinees.org/recherche" class="search_bar" method="get">
+							<div class="input-group">
+								<input type="text" class="bar_input" name="q" placeholder="texte à rechercher..." />
+								<button type="submit" class="btn picto icon-ctrl5 black ease_in_out"></button>
+							</div>
+						</form>
+					</div>
+				</div>
 
-        const formatNumber = (value, options = {}) => {
-          const formatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2, ...options });
-          return formatter.format(Number.isFinite(value) ? value : 0);
-        };
+			</nav>
+		</div>
+	</header>
+	<!-- END HEADER -->
+	
+	<div class="content_section"><section class="home_image">
+	<div class="overlay_search"></div>
+	<div class="img home_image_container" style="background-image: url('https://www.engagees-determinees.org/medias/photodegroupe4.jpg');">
+		<div class="on_home_image">
+			<span class="infos_home_image">
+				<span class="ed2">Engage·e·s et Determine·e·s !</span>
+			</span>
+		</div>
+	</div>
+</section>
+	<section class="header_part">
+		<nav class="general_menu wrapper">
+			<ul class="row">
+													<li>
+						<a  href="https://www.engagees-determinees.org/notre-vision" class="ease_in_out" data-menu="menu_qui_sommes-nous">
+							Qui sommes-nous ?						</a>
+					</li>
+														<li>
+						<a  href="https://www.engagees-determinees.org/nos-actions" class="ease_in_out" data-menu="menu_nos_missions">
+							Nos missions						</a>
+					</li>
+														<li>
+						<a  href="https://www.engagees-determinees.org/notrereseau" class="ease_in_out" data-menu="menu_notre_reseau">
+							Notre reseau						</a>
+					</li>
+														<li>
+						<a  href="https://www.engagees-determinees.org/actualites" class="ease_in_out" data-menu="menu_actus">
+							Actus						</a>
+					</li>
+														<li>
+						<a  href="https://www.engagees-determinees.org/outils" class="ease_in_out" data-menu="menu_outils">
+							Outils						</a>
+					</li>
+														<li>
+						<a  href="https://www.engagees-determinees.org/nos-partenaires" class="ease_in_out" data-menu="menu_partenariats">
+							partenariats						</a>
+					</li>
+												</ul>
+		</nav>
+	</section>
+<section class="project">
+	<div class="wrapper">
 
-        const escapeHtml = (value) =>
-          String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+		<div class="wrap center section_title_container">
+			<div class="section_title"></div>
+			<div class="section_title_text_container">
 
-        const computeLocalCharges = () => {
-          const totalAED = state.localCharges.filter((item) => item.included).reduce((sum, item) => sum + Number(item.amountAED || 0), 0);
-          const totalEUR = state.aedToUsdRate === 0 ? 0 : (totalAED / state.aedToUsdRate) * state.exchangeRate;
-          return { totalAED, totalEUR };
-        };
+				
+				<span class="picto icon-cog picto-background"></span>
+				<span class="section_title_text title_bold">Vous avez un projet ?</span><br/>
+				<span class="section_title_text light_text">Nous sommes là pour vous accompagner !</span>
+			</div>
+			<div class="section_title"></div>
+		</div>
 
-        const computeShipping = () => {
-          const totalQuantity = state.shippingProducts.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-          const totalWeightKg = state.shippingProducts.reduce((sum, item) => sum + Number(item.weightKg || 0) * Number(item.qty || 0), 0);
-          const { totalAED, totalEUR } = computeLocalCharges();
-          const transportPerContainerEUR = state.freightQuoteEUR + totalEUR;
-          const transportTotalEUR = transportPerContainerEUR * state.containerCount;
-          const transportTotalUSD = state.exchangeRate === 0 ? 0 : transportTotalEUR / state.exchangeRate;
-          const averageTransportPerUnitUSD = totalQuantity === 0 ? 0 : transportTotalUSD / totalQuantity;
+		<ul class="row img_button_text">
+						<li class="col-md-4">
+				<a href="https://www.engagees-determinees.org/accompagnement" >
+					<div class="image_display otc_img_prev col-md-4" style="background-image: url('https://www.engagees-determinees.org/medias/IMG85932.jpg');">
+					</div>
+				</a>
+				<div class="on_the_cover_infos">
+					<a href="https://www.engagees-determinees.org/accompagnement"  class="otc_infos_link orange ease_in_out">
+						<span class="picto icon-ctrl5"></span>
+						Le Parcours d'Accompagnement et de Formation					</a>
+				</div>
+			</li>
+										<li class="col-md-4">
+					<a href="https://www.engagees-determinees.org/jsi" >
+						<div class="image_display otc_img_prev col-md-4" style="background-image: url('https://www.engagees-determinees.org/medias/VisuelJSI5.png');">		
+						</div>
+					</a>
+					<div class="on_the_cover_infos">
+						<a href="https://www.engagees-determinees.org/jsi"  class="otc_infos_link orange ease_in_out">
+							<span class="picto icon-ctrl5"></span>
+							Le programme Jeunesse et Solidarité Internationale						</a>
+					</div>
+				</li>
+										<li class="col-md-4">
+					<a href="https://www.engagees-determinees.org/pieed" >
+						<div class="image_display otc_img_prev col-md-4" style="background-image: url('https://www.engagees-determinees.org/medias/P10404641.jpg');">								
+						</div>
+					</a>
+					<div class="on_the_cover_infos">
+						<a href="https://www.engagees-determinees.org/pieed"  class="otc_infos_link orange ease_in_out">
+							<span class="picto icon-ctrl5"></span>
+							L'appel à projets PIEED						</a>
+					</div>
+				</li>
+					</ul>
 
-          const rows = state.shippingProducts.map((product) => {
-            const qty = Number(product.qty || 0);
-            const weight = Number(product.weightKg || 0);
-            const weightTotal = weight * qty;
+	</div>
+</section><section class="on_the_cover">
+	<div class="wrapper">
+		<div class="wrap center section_title_container otc_title">
+			<div class="section_title"></div>
+			<div class="section_title_text_container">
+								<span class="picto icon-earth picto-background"></span>
+				<span class="section_title_text title_bold">A la une</span><br/>
+				<span class="section_title_text light_text">Articles & événements</span>
+			</div>
+			<div class="section_title"></div>
+		</div>
 
-            let transportShareUSDPerUnit = 0;
-            if (state.distributionMode === 'unit') {
-              transportShareUSDPerUnit = averageTransportPerUnitUSD;
-            } else if (state.distributionMode === 'weight' && qty > 0 && totalWeightKg > 0) {
-              const shareUSD = transportTotalUSD * (weightTotal / totalWeightKg);
-              transportShareUSDPerUnit = shareUSD / qty;
-            }
+					<ul class="row img_button_text">
+																			<li class="col-md-4">
+						<div class="image_display otc_img_prev col-md-4" style="background-image: url('https://www.engagees-determinees.org/medias/Annoncesitenouveaucalendrier.png');">
+							<a class="contain_link" href="https://www.engagees-determinees.org/articles/calendrier2023-2024"></a>
+							<div class="image_display_container on_the_cover ease_in_out">
+								<button type="button" class="global_button bg_blue ease_in_out">
+									<span class="picto icon-plus icon_on_the_cover"></span>
+									<span class="global_button_text">Lire la suite</span>
+								</button>
+							</div>
+						</div>
+						<div class="on_the_cover_infos">
+							Par 
+							<span class="otc_infos_link orange ease_in_out">
+								E&D							</span>
+							<h3 class="otc_infos_title">
+								<a href="https://www.engagees-determinees.org/articles/calendrier2023-2024">Le calendrier de l'année 2023-2024 est sorti ! </a>
+							</h3>
+							<p class="otc_infos_text">
+								Vous voulez en savoir plus sur les activit&eacute;s d&#39;E&amp;D cette ann&eacute;e ?Voici le...							</p>
+						</div>
+					</li>
+																			<li class="col-md-4">
+						<div class="image_display otc_img_prev col-md-4" style="background-image: url('https://www.engagees-determinees.org/medias/WEBINEDSOSFINANCEMENT.png');">
+							<a class="contain_link" href="https://www.engagees-determinees.org/articles/evenement-2023"></a>
+							<div class="image_display_container on_the_cover ease_in_out">
+								<button type="button" class="global_button bg_blue ease_in_out">
+									<span class="picto icon-plus icon_on_the_cover"></span>
+									<span class="global_button_text">Lire la suite</span>
+								</button>
+							</div>
+						</div>
+						<div class="on_the_cover_infos">
+							Par 
+							<span class="otc_infos_link orange ease_in_out">
+								Engagé·e·s et Déterminé·e·s							</span>
+							<h3 class="otc_infos_title">
+								<a href="https://www.engagees-determinees.org/articles/evenement-2023">Webin'ED SOS Financement</a>
+							</h3>
+							<p class="otc_infos_text">
+								R&eacute;servez votre soir&eacute;e&nbsp;le 18&nbsp;octobre&nbsp;de 19h &agrave; 21h !							</p>
+						</div>
+					</li>
+																			<li class="col-md-4">
+						<div class="image_display otc_img_prev col-md-4" style="background-image: url('https://www.engagees-determinees.org/medias/ProgrammewebinairesPAJvisuelRS.png');">
+							<a class="contain_link" href="https://www.engagees-determinees.org/articles/WebinairesPAJ"></a>
+							<div class="image_display_container on_the_cover ease_in_out">
+								<button type="button" class="global_button bg_blue ease_in_out">
+									<span class="picto icon-plus icon_on_the_cover"></span>
+									<span class="global_button_text">Lire la suite</span>
+								</button>
+							</div>
+						</div>
+						<div class="on_the_cover_infos">
+							Par 
+							<span class="otc_infos_link orange ease_in_out">
+															</span>
+							<h3 class="otc_infos_title">
+								<a href="https://www.engagees-determinees.org/articles/WebinairesPAJ">Webinaire sur l'intersectionnalité appliquée aux jeunesses</a>
+							</h3>
+							<p class="otc_infos_text">
+								Dans le cadre du projet &laquo; Place aux Jeunes ! &raquo; (PAJ), nous vous proposons ce mois-ci...							</p>
+						</div>
+					</li>
+							</ul>
+		
+					<ul class="row event_preview img_button_text">
+																			<li class="col-md-6">
+						<div class="image_display otc_img_prev col-md-6" style="background-image: url('https://www.engagees-determinees.org/medias/VisuelCAP1.png');">
+							<a class="contain_link" href="https://www.engagees-determinees.org/tous-les-evenements/cap-2023"></a>
+							
+							<div class="image_display_container on_the_cover ease_in_out">
+								<button type="button" class="global_button bg_purple ease_in_out">
+									<span class="picto icon-plus icon_on_the_cover"></span>
+									<span class="global_button_text">Lire la suite</span>
+								</button>
+							</div>
+						</div>
+						<div class="on_the_cover_infos">
+																								<div class="image_display_date">Du 14/01/2023 au 18/02/2023</div>
+																						Par 
+																																<span class="otc_infos_link orange ease_in_out">
+										ENGAGÉ.E.S ET DÉTERMINÉ.E.S
+									</span>
+																						<h3 class="otc_infos_title">
+								<a href="https://www.engagees-determinees.org/tous-les-evenements/cap-2023">Les CAP sont de retour !</a>
+							</h3>
+							<p class="otc_infos_text">
+								&Ccedil;a y&#39;est, les CAP sont de retour !Les Commissions d&#39;Appui aux Projets (CAP) sont de faux-jurys de vrai&middot;es pro de la solidarit&eacute; internationale pour...							</p>
+						</div>
+					</li>
+																			<li class="col-md-6">
+						<div class="image_display otc_img_prev col-md-6" style="background-image: url('https://www.engagees-determinees.org/medias/AnnonceWEEeDFacebookLinkedInTwitter1.png');">
+							<a class="contain_link" href="https://www.engagees-determinees.org/tous-les-evenements/weeed-2023"></a>
+							
+							<div class="image_display_container on_the_cover ease_in_out">
+								<button type="button" class="global_button bg_purple ease_in_out">
+									<span class="picto icon-plus icon_on_the_cover"></span>
+									<span class="global_button_text">Lire la suite</span>
+								</button>
+							</div>
+						</div>
+						<div class="on_the_cover_infos">
+																								<div class="image_display_date">Du 28/01/2023 au 29/01/2023</div>
+																						Par 
+																																<span class="otc_infos_link orange ease_in_out">
+										ENGAGÉ.E.S ET DÉTERMINÉ.E.S
+									</span>
+																						<h3 class="otc_infos_title">
+								<a href="https://www.engagees-determinees.org/tous-les-evenements/weeed-2023">Le WEEeD 2023 : 28 & 29 janvier !</a>
+							</h3>
+							<p class="otc_infos_text">
+								Vers la SI et au-del&agrave; !Cap sur la Solidarit&eacute; Internationale du futur, avec l&#39;&eacute;dition 2023 du l&eacute;gendaire WEEeD !R&eacute;serve vite dans ton...							</p>
+						</div>
+					</li>
+							</ul>
+		
+		<a href="https://www.engagees-determinees.org/actualites" class="global_button bg_blue ease_in_out button_actu">
+			<span class="picto icon-ctrl5 global_button_icon"></span>
+			<span class="global_button_text">Toutes les actualit&eacute;s</span>
+		</a>
 
-            const unitPriceUSD = Number(product.unitPriceUSD || 0);
-            const totalAmountUSD = qty * unitPriceUSD;
-            const upEUR = unitPriceUSD * state.exchangeRate;
-            const rowMargin = Number.isFinite(product.marginPercent) ? product.marginPercent : state.marginPercent;
-            const upTranspEUR = (unitPriceUSD + transportShareUSDPerUnit) * state.exchangeRate;
-            const upTrMargeEURUnit = upTranspEUR * (1 + rowMargin / 100);
-            const totalUpTrMargeEUR = upTrMargeEURUnit * qty;
-            const marginEURUnit = upTrMargeEURUnit - upEUR;
-            const totalMarginEUR = marginEURUnit * qty;
+	</div>
+</section><section class="live">
+	<div class="wrapper">
+		<div class="wrap center section_title_container">
+			<div class="section_title"></div>
+			<div class="section_title_text_container">
+								<span class="picto icon-cartable picto-background"></span>
+				<span class="section_title_text title_bold">En live</span><br/>
+				<span class="section_title_text light_text">Petites annonces & boîte à outils</span>
+			</div>
+			<div class="section_title"></div>
+		</div>
+	</div>
 
-            return {
-              ...product,
-              qty,
-              weightKg: weight,
-              totalAmountUSD,
-              upEUR,
-              upTrMargeEURUnit,
-              totalUpTrMargeEUR,
-              marginEURUnit,
-              totalMarginEUR,
-              totalWeightForRow: weightTotal,
-              rowMargin
-            };
-          });
+			<ul class="row ads_preview">
+																	<li class="col-md-4 col-sm-12">
+						<div class="on_the_cover_infos">
+							<div class="otc_infos_text">
+								[Lille] Service Civique : Accompagner les projets jeunes de Solidarité Internationale							</div>
+							<a href="https://www.engagees-determinees.org/les-petites-annonces/vsc-lille" class="global_button ease_in_out bg_blue">
+								<span class="global_button_text">voir l&rsquo;annonce</span>
+							</a>
+						</div>
+					</li>
+														<li class="col-md-4 col-sm-12">
+						<div class="on_the_cover_infos">
+							<div class="otc_infos_text">
+								[Grenoble] Service Civique : Accompagner les projets jeunes de Solidarité Internationale et...							</div>
+							<a href="https://www.engagees-determinees.org/les-petites-annonces/vsc-lyon" class="global_button ease_in_out bg_blue">
+								<span class="global_button_text">voir l&rsquo;annonce</span>
+							</a>
+						</div>
+					</li>
+														<li class="col-md-4 col-sm-12">
+						<div class="on_the_cover_infos">
+							<div class="otc_infos_text">
+								[Marseille] Service Civique : Accompagner les projets jeunes de Solidarité Internationale							</div>
+							<a href="https://www.engagees-determinees.org/les-petites-annonces/vsc-marseille" class="global_button ease_in_out bg_blue">
+								<span class="global_button_text">voir l&rsquo;annonce</span>
+							</a>
+						</div>
+					</li>
+																									<li class="col-md-4 col-sm-12">
+							<div class="on_the_cover_infos">
+								<div class="otc_infos_text">
+									Abécédaire des Violences Sexistes et Sexuelles								</div>
+								<a href="https://www.engagees-determinees.org/outils/abecedaireVSS" class="global_button ease_in_out bg_orange">
+									<span class="global_button_text">d&eacute;couvrir</span>
+								</a>
+							</div>
+						</li>
+															<li class="col-md-4 col-sm-12">
+							<div class="on_the_cover_infos">
+								<div class="otc_infos_text">
+									Fiche 5 : Favoriser une gouvernance inclusive								</div>
+								<a href="https://www.engagees-determinees.org/outils/fiche5gouvernance" class="global_button ease_in_out bg_orange">
+									<span class="global_button_text">d&eacute;couvrir</span>
+								</a>
+							</div>
+						</li>
+															<li class="col-md-4 col-sm-12">
+							<div class="on_the_cover_infos">
+								<div class="otc_infos_text">
+									Fiche 4 : Organiser des évènements inclusifs								</div>
+								<a href="https://www.engagees-determinees.org/outils/Fiche4evenements" class="global_button ease_in_out bg_orange">
+									<span class="global_button_text">d&eacute;couvrir</span>
+								</a>
+							</div>
+						</li>
+									</ul>
+	
+</section><section class="social_ed">
 
-          const totals = rows.reduce(
-            (acc, row) => ({
-              qty: acc.qty + row.qty,
-              totalAmountUSD: acc.totalAmountUSD + row.totalAmountUSD,
-              totalWeightKg: acc.totalWeightKg + row.totalWeightForRow,
-              totalUpTrMargeEUR: acc.totalUpTrMargeEUR + row.totalUpTrMargeEUR,
-              totalMarginEUR: acc.totalMarginEUR + row.totalMarginEUR
-            }),
-            { qty: 0, totalAmountUSD: 0, totalWeightKg: 0, totalUpTrMargeEUR: 0, totalMarginEUR: 0 }
-          );
+	<div class="wrapper">
 
-          return {
-            rows,
-            totals,
-            totalQuantity,
-            totalWeightKg,
-            transportPerContainerEUR,
-            transportTotalEUR,
-            transportTotalUSD,
-            localChargesAED: totalAED,
-            localChargesEUR: totalEUR,
-            averageTransportPerUnitUSD
-          };
-        };
+		<div class="wrap center section_title_container">
+			<div class="section_title"></div>
+			<div class="section_title_text_container">
+				
+				<span class="picto icon-facebook_like picto-background"></span>
+				<span class="section_title_text title_bold">Suivez-nous</span><br/>
+				<span class="section_title_text light_text">sur les réseaux</span>
+			</div>
+			<div class="section_title"></div>
+		</div>
 
-        const downloadCSV = () => {
-          const shipping = computeShipping();
-          const headers = [
-            'No.',
-            'Description',
-            'QTY (pcs)',
-            'UNIT PRICE (USD)',
-            'TOTAL AMOUNT (USD)',
-            `UP USD ➜ EUR @${state.exchangeRate}`,
-            'UP+TR+Mg (EUR)',
-            'TOTAL UP+TR+Mg (EUR)',
-            'Marge (EUR/u)',
-            'Weight per unit (kg)',
-            'Total Weight (kg)',
-            'Marge (%) ligne'
-          ];
+					<ul class="row follow_us">
+									<li class="col-md-4">
+						<div class="on_the_cover_infos facebook"> 
+							likez-nous							&excl;
+						</div>
+						<a href="https://www.facebook.com/EngageesDeterminees" class="global_button ease_in_out bg_facebook" target="_blank">
+							<span class="picto icon-facebook3 global_button_icon"></span>
+							<span class="global_button_text">
+																	facebook															</span>
+						</a>
+					</li>
+				
+									<li class="col-md-4">
+						<div class="on_the_cover_infos instagram"> 
+							suivez-nous							&excl;
+						</div>
+						<a href="https://www.instagram.com/engageesdeterminees" class="global_button ease_in_out bg_instagram" target="_blank">
+							<span class="picto icon-instagram global_button_icon"></span>
+							<span class="global_button_text">
+																	instagram															</span>
+						</a>
+					</li>
+				
+									<li class="col-md-4">
+						<div class="on_the_cover_infos twitter"> 
+							suivez-nous							&excl;
+						</div>
+						<a href="https://twitter.com/EngageesD" class="global_button ease_in_out bg_twitter" target="_blank">
+							<span class="picto icon-twitter3 global_button_icon"></span>
+							<span class="global_button_text">
+																	twitter															</span>
+						</a>
+					</li>
+				
+									<li class="col-md-4">
+						<div class="on_the_cover_infos youtube"> 
+							watchez-nous							&excl;
+						</div>
+						<a href="https://www.youtube.com/user/etudiantsetdev" class="global_button ease_in_out bg_youtube" target="_blank">
+							<span class="picto icon-youtube22 global_button_icon"></span>
+							<span class="global_button_text">
+															</span>
+						</a>
+					</li>
+				
+									<!-- <li class="col-md-4">
+						<div class="on_the_cover_infos insta"> 
+							follower-nous						!
+						</div>
+						<a href="#" class="global_button ease_in_out bg_instagram" target="_blank">
+							<span class="picto icon-instagram global_button_icon"></span>
+							<span class="global_button_text">
+							instagram
+							</span>
+						</a>
+					</li> -->
+			</ul>
+		
+	</div>
+	
+</section><section class="newsletter bg_blue">
+	<form method="post" action="https://www.engagees-determinees.org/ajax/subscribe_newsletter" id="subscribe-newsletter">
+		<h1 class="newsletter_title white">Retrouvez toutes nos actualites sur la solidarite internationale</h1>
+		<h2 class="newsletter_subtitle white">Inscrivez-vous à la newsletter</h2>
+		<input type="email" class="mail_input" name="email" placeholder="Votre email">
+		<button type="submit" class="global_button bg_orange ease_in_out">Ok</button>
+		<p class="newsletter_infos white">&nbsp;</p>
+	</form>
+</section>		</div><!-- end of content_section -->
 
-          const rows = shipping.rows.map((row) => [
-            row.no,
-            row.description,
-            row.qty,
-            `$${row.unitPriceUSD.toFixed(2)}`,
-            `$${row.totalAmountUSD.toFixed(2)}`,
-            `${row.upEUR.toFixed(2)} €`,
-            `${row.upTrMargeEURUnit.toFixed(2)} €`,
-            `${row.totalUpTrMargeEUR.toFixed(2)} €`,
-            `${row.marginEURUnit.toFixed(2)} €`,
-            (row.weightKg || 0).toFixed(2),
-            row.totalWeightForRow.toFixed(2),
-            Number.isFinite(row.rowMargin) ? `${row.rowMargin.toFixed(2)} %` : `${state.marginPercent.toFixed(2)} %`
-          ]);
+		<!-- FOOTER -->
+		
+		<footer class="footer_ed">
+			<div class="footer_contain">
+				<div class="site_map">
+											<ul class="row site_map_list">
+																						<li class="col-md-2 col-md-offset-1">
+									<a  href="https://www.engagees-determinees.org/notre-vision" class="ease_in_out">
+										Qui sommes nous ?									</a>
 
-          rows.push(['Total Quantity:', '', shipping.totals.qty, '', `$${shipping.totals.totalAmountUSD.toFixed(2)}`, '', '', `${shipping.totals.totalUpTrMargeEUR.toFixed(2)} €`, `${shipping.totals.totalMarginEUR.toFixed(2)} €`, '', shipping.totals.totalWeightKg.toFixed(2), '']);
-          rows.push(['Transport per container (EUR):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.transportPerContainerEUR.toFixed(2)} €`]);
-          rows.push(['Local charges total (AED):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.localChargesAED.toFixed(2)} AED`]);
-          rows.push(['Transport total (EUR):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.transportTotalEUR.toFixed(2)} €`]);
+																			<ul class="site_map_sub">
+																							<li>
+													<a  href="https://www.engagees-determinees.org/notre-vision" class="ease_in_out">Notre vision</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/notre-equipe" class="ease_in_out">Notre équipe</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/nos-partenaires" class="ease_in_out">Nos partenaires</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/ideas" class="ease_in_out">Label IDEAS</a>
+												</li>
+																					</ul>
+																	</li>
+																							<li class="col-md-2 ">
+									<a  href="https://www.engagees-determinees.org/nos-actions" class="ease_in_out">
+										Nos missions									</a>
 
-          const csvContent = [headers.join(';'), ...rows.map((row) => row.join(';'))].join('\n');
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = 'huawei_pricing_with_transport_versions.csv';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        };
+																			<ul class="site_map_sub">
+																							<li>
+													<a  href="https://www.engagees-determinees.org/accompagnement" class="ease_in_out">Accompagnement et formation</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/valorisation" class="ease_in_out">Valorisation des initiatives</a>
+												</li>
+																					</ul>
+																	</li>
+																							<li class="col-md-2 ">
+									<a  href="https://www.engagees-determinees.org/" class="ease_in_out">
+										Notre réseau									</a>
 
-        const addShippingRow = () => {
-          const nextNo = state.shippingProducts.length ? Math.max(...state.shippingProducts.map((item) => Number(item.no) || 0)) + 1 : 1;
-          state.shippingProducts.push({ no: nextNo, description: '', qty: 0, unitPriceUSD: 0, weightKg: 0 });
-          render();
-        };
+																			<ul class="site_map_sub">
+																							<li>
+													<a  href="https://www.engagees-determinees.org/laviedureseau" class="ease_in_out">La vie du réseau</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/missions-international" class="ease_in_out">E&D à l'international</a>
+												</li>
+																					</ul>
+																	</li>
+																							<li class="col-md-2 ">
+									<a  href="https://www.engagees-determinees.org/outils" class="ease_in_out">
+										Boite à outils									</a>
 
-        const updateProductField = (index, field, rawValue) => {
-          const list = state.shippingProducts;
-          if (!list[index]) return;
-          const value =
-            field === 'description'
-              ? rawValue
-              : field === 'marginPercent'
-              ? rawValue === '' ? null : parseFloat(rawValue)
-              : parseFloat(rawValue) || 0;
-          list[index] = { ...list[index], [field]: value };
-          render();
-        };
+																	</li>
+																							<li class="col-md-2 ">
+									<a  href="https://www.engagees-determinees.org/actualites" class="ease_in_out">
+										Actualités									</a>
 
-        const updateGlobalField = (field, rawValue) => {
-          if (numberFields.has(field)) {
-            const numericValue = field === 'containerCount' ? parseInt(rawValue, 10) : parseFloat(rawValue);
-            state[field] = Number.isFinite(numericValue) ? numericValue : 0;
-            if (field === 'containerCount' && state.containerCount < 1) state.containerCount = 1;
-          } else {
-            state[field] = rawValue;
-          }
-          render();
-        };
+																			<ul class="site_map_sub">
+																							<li>
+													<a  href="https://www.engagees-determinees.org/tous-les-evenements" class="ease_in_out">Evénements</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/articles" class="ease_in_out">Articles</a>
+												</li>
+																							<li>
+													<a  href="https://www.engagees-determinees.org/les-petites-annonces" class="ease_in_out">Petites annonces</a>
+												</li>
+																					</ul>
+																	</li>
+																					</ul>
+					
+					<hr class="separation">
 
-        const toggleCharge = (id) => {
-          state.localCharges = state.localCharges.map((charge) => (charge.id === id ? { ...charge, included: !charge.included } : charge));
-          render();
-        };
+					<div class="legal_container">
+													<ul class="row legal">
+																	<li class="col-md-4">
+										<a href="https://www.engagees-determinees.org/contact"  class="ease_in_out">Contact</a>
+									</li>
+																	<li class="col-md-4">
+										<a href="https://www.engagees-determinees.org/adherer"  class="ease_in_out">Adhésion</a>
+									</li>
+																	<li class="col-md-4">
+										<a href="https://www.engagees-determinees.org/mentions-legales"  class="ease_in_out">Mentions Légales</a>
+									</li>
+																	<li class="col-md-4">
+										<a href="https://www.engagees-determinees.org/FAQ"  class="ease_in_out">FAQ</a>
+									</li>
+																	<li class="col-md-4">
+										<a href="https://www.engagees-determinees.org/espace-presse"  class="ease_in_out">       Espace Presse</a>
+									</li>
+															</ul>
+						
+													<ul class="row social_bottom">
+																	<li>
+										<a href="https://www.facebook.com/EngageesDeterminees" target="_blank" class="ease_in_out">
+											<span class="picto icon-facebook3"></span>
+										</a>
+									</li>
+																	<li>
+										<a href="https://www.instagram.com/engageesdeterminees/" target="_blank" class="ease_in_out">
+											<span class="picto icon-instagram"></span>
+										</a>
+									</li>
+																	<li>
+										<a href="https://twitter.com/EngageesD" target="_blank" class="ease_in_out">
+											<span class="picto icon-twitter3"></span>
+										</a>
+									</li>
+																	<li>
+										<a href="https://www.youtube.com/user/etudiantsetdev" target="_blank" class="ease_in_out">
+											<span class="picto icon-youtube22"></span>
+										</a>
+									</li>
+															</ul>
+											</div>
 
-        const updateChargeAmount = (id, rawValue) => {
-          const amount = parseFloat(rawValue);
-          state.localCharges = state.localCharges.map((charge) => (charge.id === id ? { ...charge, amountAED: Number.isFinite(amount) ? amount : 0 } : charge));
-          render();
-        };
+				</div>
+			</div>
+			<p class="white bg_orange credit">
+				Site réalisé avec engagement par 
+				<a target="_blank" href="https://www.oneheartcommunication.com/" class="oc_link white">One Heart Communication</a>
+			</p>
+			<!-- <div class="last_element"></div> -->
+		</footer>
+		<!-- END FOOTER -->
 
-        const captureFocus = () => {
-          const active = document.activeElement;
-          if (!active) return null;
-          const isSelectableInput = active instanceof HTMLInputElement && active.type !== 'number' && active.type !== 'range' && active.type !== 'color' && active.type !== 'date';
-          const selectionStart = isSelectableInput ? active.selectionStart : undefined;
-          const selectionEnd = isSelectableInput ? active.selectionEnd : undefined;
-          const rect = active.getBoundingClientRect();
-          if (active.dataset?.field !== undefined && active.dataset?.index !== undefined) {
-            return { type: 'product', field: active.dataset.field, index: active.dataset.index, selectionStart, selectionEnd, offsetTop: rect.top };
-          }
-          if (active.dataset?.global) {
-            return { type: 'global', field: active.dataset.global, selectionStart, selectionEnd, offsetTop: rect.top };
-          }
-          if (active.dataset?.chargeAmount) {
-            return { type: 'charge', id: active.dataset.chargeAmount, selectionStart, selectionEnd, offsetTop: rect.top };
-          }
-          return null;
-        };
+		<!-- TOOLS -->
+		<div id="up"><a id="gototop"></a></div>
+		<div class="close_overlay"></div>
+		<!-- END TOOLS -->
 
-        const restoreFocus = (focusData) => {
-          if (!focusData) return;
-          let selector = '';
-          if (focusData.type === 'product') {
-            selector = `[data-field="${focusData.field}"][data-index="${focusData.index}"]`;
-          } else if (focusData.type === 'global') {
-            selector = `[data-global="${focusData.field}"]`;
-          } else if (focusData.type === 'charge') {
-            selector = `[data-charge-amount="${focusData.id}"]`;
-          }
-          if (!selector) return;
-          const target = document.querySelector(selector);
-          if (target && typeof target.focus === 'function') {
-            target.focus({ preventScroll: true });
-            if (
-              typeof focusData.selectionStart === 'number' &&
-              typeof focusData.selectionEnd === 'number' &&
-              typeof target.setSelectionRange === 'function'
-            ) {
-              target.setSelectionRange(focusData.selectionStart, focusData.selectionEnd);
-            }
-            if (focusData.offsetTop !== undefined) {
-              const newRect = target.getBoundingClientRect();
-              const delta = newRect.top - focusData.offsetTop;
-              if (Math.abs(delta) > 1) {
-                setScrollTop(getScrollTop() + delta);
-              }
-            }
-          }
-        };
+	</div>	
+	<!-- END MAIN CONTENT -->
+	
+	<!-- SCRIPTS -->
+	<script src="https://www.engagees-determinees.org/assets/front/js/modernizr.min.js"></script>
+	<script src="https://www.engagees-determinees.org/assets/front/js/jquery.min.js"></script>
+	<script src="https://www.engagees-determinees.org/assets/front/js/bootstrap.min.js"></script>
+	<script src="https://www.engagees-determinees.org/assets/front/js/select2/select2.full.min.js"></script>
+	<script src="https://www.engagees-determinees.org/assets/front/js/select2/i18n/fr.js"></script>
 
-        const getScrollTop = () => {
-          if (document.scrollingElement) return document.scrollingElement.scrollTop;
-          return window.pageYOffset || 0;
-        };
+	<script src="https://www.engagees-determinees.org/assets/front/js/global.js"></script>
 
-        const setScrollTop = (value) => {
-          if (document.scrollingElement) {
-            document.scrollingElement.scrollTop = value;
-          } else {
-            window.scrollTo(0, value);
-          }
-        };
+		
+					
+			
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        const render = () => {
-          const previousScrollY = getScrollTop();
-          const previousFocus = captureFocus();
-          const shipping = computeShipping();
+		ga('create', 'UA-96437009-1', 'auto');
+		ga('send', 'pageview');
+	</script>
 
-          const distributionButtons = [
-            { id: 'unit', label: 'Version 1 · Unitaire' },
-            { id: 'weight', label: 'Version 2 · Poids' }
-          ]
-            .map(
-              (option) => `
-                <button
-                  data-action="set-distribution"
-                  data-mode="${option.id}"
-                  class="flex-1 px-3 py-2 rounded-md border text-sm ${
-                    state.distributionMode === option.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'
-                  }"
-                >
-                  ${option.label}
-                </button>
-              `
-            )
-            .join('');
+	<script type="text/javascript">
+		var _paq = _paq || [];
+		_paq.push(['trackPageView']);
+		_paq.push(['enableLinkTracking']);
+		(function() {
+		var u="//analytics.animafac.net/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', '12']);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+		})();
+	</script>
+	<!-- END SCRIPTS -->
 
-          const localChargesRows = state.localCharges
-            .map(
-              (charge) => `
-                <tr class="border-t">
-                  <td class="border px-2 py-2 text-center">
-                    <input type="checkbox" data-charge-toggle="${charge.id}" ${charge.included ? 'checked' : ''} />
-                  </td>
-                  <td class="border px-2 py-2">${escapeHtml(charge.label)}</td>
-                  <td class="border px-2 py-2 text-right">
-                    <input
-                      type="number"
-                      step="0.01"
-                      class="w-28 px-2 py-1 border border-gray-200 rounded"
-                      value="${Number(charge.amountAED || 0)}"
-                      data-charge-amount="${charge.id}"
-                    />
-                  </td>
-                  <td class="border px-2 py-2 text-gray-500 text-xs">${escapeHtml(charge.note)}</td>
-                </tr>
-              `
-            )
-            .join('');
-
-          const renderProductRow = (row, index) => `
-            <tr class="hover:bg-gray-50">
-              <td class="border border-gray-300 px-2 py-2">${row.no ?? index + 1}</td>
-              <td class="border border-gray-300 px-2 py-2 w-[36rem]">
-                <input
-                  type="text"
-                  value="${escapeHtml(row.description || '')}"
-                  data-index="${index}"
-                  data-field="description"
-                  class="w-full px-1 py-1 border border-gray-200 rounded"
-                />
-              </td>
-              <td class="border border-gray-300 px-2 py-2 text-center">
-                <input
-                  type="number"
-                  value="${row.qty}"
-                  data-index="${index}"
-                  data-field="qty"
-                  class="w-16 px-1 py-1 text-center border border-gray-200 rounded"
-                />
-              </td>
-              <td class="border border-gray-300 px-2 py-2 text-right w-24">
-                <input
-                  type="number"
-                  step="0.01"
-                  value="${Number(row.weightKg || 0)}"
-                  data-index="${index}"
-                  data-field="weightKg"
-                  class="w-16 px-1 py-1 text-right border border-gray-200 rounded"
-                />
-              </td>
-              <td class="border border-gray-300 px-2 py-2 text-right w-24">
-                <input
-                  type="number"
-                  step="0.01"
-                  value="${Number(row.unitPriceUSD || 0)}"
-                  data-index="${index}"
-                  data-field="unitPriceUSD"
-                  class="w-20 px-1 py-1 text-right border border-gray-200 rounded"
-                />
-              </td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-medium">$${formatNumber(row.totalAmountUSD)}</td>
-              <td class="border border-gray-300 px-2 py-2 text-right w-40">
-                <div class="flex flex-col items-end leading-tight">
-                  <span class="text-blue-700 font-semibold">$${formatNumber(row.unitPriceUSD)}</span>
-                  <span class="text-xs text-gray-500">${formatNumber(row.upEUR)} €</span>
-                </div>
-              </td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-600">${formatNumber(row.upTrMargeEURUnit)} €</td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-700">${formatNumber(row.totalUpTrMargeEUR)} €</td>
-              <td class="border border-gray-300 px-2 py-2 w-28">
-                <div class="flex items-center justify-end gap-1 text-purple-600 whitespace-nowrap">
-                  <span>${formatNumber(row.marginEURUnit)}</span>
-                  <span>€</span>
-                </div>
-              </td>
-              <td class="border border-gray-300 px-2 py-2">
-                <div class="flex items-center justify-end gap-1 text-purple-700 font-medium whitespace-nowrap">
-                  <span>${formatNumber(row.totalMarginEUR)}</span>
-                  <span>€</span>
-                </div>
-              </td>
-              <td class="border border-gray-300 px-2 py-2 text-center w-28">
-                <input
-                  type="number"
-                  step="0.1"
-                  placeholder="${formatNumber(state.marginPercent, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}"
-                  value="${row.marginPercent ?? ''}"
-                  data-index="${index}"
-                  data-field="marginPercent"
-                  class="w-24 px-1 py-1 text-right border border-gray-200 rounded"
-                />
-              </td>
-            </tr>
-          `;
-
-        const renderTotalsRow = (totals, totalWeightText = '') => `
-            <tr class="bg-yellow-50 font-bold">
-              <td colspan="2" class="border border-gray-300 px-2 py-2">TOTAL</td>
-              <td class="border border-gray-300 px-2 py-2 text-center">${totals.qty}</td>
-              <td class="border border-gray-300 px-2 py-2 text-right">${totalWeightText}</td>
-              <td class="border border-gray-300 px-2 py-2"></td>
-              <td class="border border-gray-300 px-2 py-2 text-right text-lg">$${formatNumber(totals.totalAmountUSD)}</td>
-              <td class="border border-gray-300 px-2 py-2"></td>
-              <td class="border border-gray-300 px-2 py-2"></td>
-              <td class="border border-gray-300 px-2 py-2 text-right font-semibold text-green-700">${formatNumber(totals.totalUpTrMargeEUR)} €</td>
-              <td class="border border-gray-300 px-2 py-2"></td>
-              <td class="border border-gray-300 px-2 py-2 text-right text-purple-600">${formatNumber(totals.totalMarginEUR)} €</td>
-              <td class="border border-gray-300 px-2 py-2"></td>
-            </tr>
-          `;
-
-          app.innerHTML = `
-            <div class="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 space-y-6">
-              <div class="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-                <h1 class="text-2xl font-bold text-gray-800">Tableau de Prix Huawei - Inverters & Accessories (24 ADAR)</h1>
-                <div class="flex gap-2">
-                  <button data-action="add-row" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                    + Ajouter une ligne
-                  </button>
-                  <button data-action="download-csv" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    ⬇ Télécharger CSV
-                  </button>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Taux de Change (EUR/USD)</label>
-                  <input type="number" step="0.0001" value="${state.exchangeRate}" data-global="exchangeRate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Taux AED ➜ USD</label>
-                  <input type="number" step="0.0001" value="${state.aedToUsdRate}" data-global="aedToUsdRate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Fret GEODIS Europe (EUR / conteneur)</label>
-                  <input type="number" step="0.01" value="${state.freightQuoteEUR}" data-global="freightQuoteEUR" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de conteneurs</label>
-                  <input type="number" min="1" step="1" value="${state.containerCount}" data-global="containerCount" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Coût Transport Total (EUR)</label>
-                  <div class="w-full px-3 py-2 border border-dashed border-gray-300 rounded-md bg-gray-50 font-semibold">
-                    ${formatNumber(shipping.transportTotalEUR)} €
-                  </div>
-                  <p class="text-xs text-gray-500 mt-1">Inclut fret + préparation Dubai × conteneurs</p>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Marge (%)</label>
-                  <input type="number" step="0.1" value="${state.marginPercent}" data-global="marginPercent" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Version du calcul</label>
-                  <div class="flex gap-2">${distributionButtons}</div>
-                  <p class="text-xs text-gray-500 mt-1">Version 3 · Multi-conteneurs = ajuster le nombre de conteneurs</p>
-                </div>
-              </div>
-
-              <div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-2">Frais de préparation Geodis Dubai (AED)</h2>
-                <div class="overflow-x-auto">
-                  <table class="w-full border border-gray-200 text-sm">
-                    <thead class="bg-gray-100">
-                      <tr>
-                        <th class="border px-2 py-2 text-left">Inclure</th>
-                        <th class="border px-2 py-2 text-left">Charge</th>
-                        <th class="border px-2 py-2 text-right">Montant (AED)</th>
-                        <th class="border px-2 py-2 text-left">Note</th>
-                      </tr>
-                    </thead>
-                    <tbody>${localChargesRows}</tbody>
-                  </table>
-                </div>
-                <div class="flex flex-wrap gap-4 text-sm text-gray-600 mt-3">
-                  <span>Total charges Dubai: <strong>${formatNumber(shipping.localChargesAED)} AED</strong></span>
-                  <span>≈ ${formatNumber(shipping.localChargesEUR)} €</span>
-                  <span>Transport / conteneur: <strong>${formatNumber(shipping.transportPerContainerEUR)} €</strong></span>
-                </div>
-              </div>
-
-              <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-sm">
-                  <thead>
-                    <tr class="bg-gray-100">
-                      <th class="border border-gray-300 px-2 py-2 text-left">No.</th>
-                      <th class="border border-gray-300 px-2 py-2 text-left w-[36rem]">Description</th>
-                      <th class="border border-gray-300 px-2 py-2 text-center">QTY</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right w-24">Poids (kg/u)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right w-24">UNIT PRICE (USD)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right">TOTAL (USD)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right w-44">UP USD ➜ EUR</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right">UP+TR+Mg (EUR)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right">TOTAL UP+TR+Mg (EUR)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right w-28">Marge (EUR/u)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-right">Marge Totale (EUR)</th>
-                      <th class="border border-gray-300 px-2 py-2 text-center w-28">Marge (%) ligne</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${shipping.rows.map((row, index) => renderProductRow(row, index)).join('')}
-                    ${renderTotalsRow(shipping.totals, `${formatNumber(shipping.totals.totalWeightKg)} kg`)}
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Version 1 · Coût transport moyen / unité</p>
-                  <p class="text-2xl font-semibold text-gray-900">$${formatNumber(shipping.averageTransportPerUnitUSD)}</p>
-                </div>
-                <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Version 2 · Poids total déclaré</p>
-                  <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipping.totalWeightKg)} kg</p>
-                </div>
-                <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Version 3 · Coût total multi-conteneurs</p>
-                  <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipping.transportTotalEUR)} €</p>
-                  <p class="text-xs text-gray-500">${state.containerCount} × ${formatNumber(shipping.transportPerContainerEUR)} €</p>
-                </div>
-              </div>
-
-              <div class="mt-2 text-xs text-gray-500">
-                Poids préremplis lorsqu’ils figurent dans les packing-lists ALSASOLAR (sinon compléter manuellement).
-              </div>
-
-              <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 class="font-semibold mb-2">Formules utilisées:</h3>
-                <ul class="text-sm text-gray-700 space-y-1">
-                  <li><strong>TOTAL AMOUNT (USD):</strong> QTY × UNIT PRICE (USD)</li>
-                  <li><strong>UP USD ➜ EUR :</strong> UNIT PRICE (USD) + conversion EUR affichée en dessous</li>
-                  <li><strong>UP+TR+Mg (EUR):</strong> (UNIT PRICE + part transport USD) × Taux × (1 + Marge %)</li>
-                  <li><strong>TOTAL UP+TR+Mg (EUR):</strong> UP+TR+Mg (EUR) × QTY</li>
-                </ul>
-                <p class="text-xs text-gray-500 mt-2">Version 3 applique automatiquement les coûts Dubai + GEODIS sur chaque conteneur sélectionné.</p>
-              </div>
-            </div>
-          `;
-
-          requestAnimationFrame(() => {
-            setScrollTop(previousScrollY);
-            restoreFocus(previousFocus);
-          });
-        };
-
-        document.addEventListener('input', (event) => {
-          const target = event.target;
-          if (target.dataset?.global) {
-            updateGlobalField(target.dataset.global, target.value);
-          } else if (target.dataset?.chargeAmount) {
-            updateChargeAmount(target.dataset.chargeAmount, target.value);
-          }
-        });
-
-        document.addEventListener('change', (event) => {
-          const target = event.target;
-          if (target.dataset?.chargeToggle) {
-            toggleCharge(target.dataset.chargeToggle);
-          } else if (target.dataset?.index && target.dataset?.field) {
-            updateProductField(Number(target.dataset.index || 0), target.dataset.field, target.value);
-          }
-        });
-
-        document.addEventListener('click', (event) => {
-          const button = event.target.closest('[data-action]');
-          if (!button) return;
-          const action = button.dataset.action;
-          if (action === 'add-row') {
-            addShippingRow();
-          } else if (action === 'download-csv') {
-            downloadCSV();
-          } else if (action === 'set-distribution') {
-            state.distributionMode = button.dataset.mode === 'weight' ? 'weight' : 'unit';
-            render();
-          } else if (action === 'delete-row') {
-            deleteRow(Number(button.dataset.index || 0));
-          }
-        });
-
-        render();
-      })();
-    </script>
-  </body>
+</body>
 </html>
