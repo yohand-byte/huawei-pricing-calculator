@@ -87,7 +87,7 @@
           { no: 29, description: 'SmartGuard-63A-S0 63A Single Phase Backup Box', qty: 5, unitPriceUSD: 458, weightKg: defaultWeights['SmartGuard-63A-S0 63A Single Phase Backup Box'] || 0, marginPercent: null },
           { no: 30, description: 'SmartGuard-63A-T0 63A Three Phase Backup Box', qty: 5, unitPriceUSD: 619, weightKg: defaultWeights['SmartGuard-63A-T0 63A Three Phase Backup Box'] || 0, marginPercent: null },
           { no: 31, description: 'EMMA-A02 Energy Management Assistant', qty: 5, unitPriceUSD: 267, weightKg: defaultWeights['EMMA-A02 Energy Management Assistant'] || 0, marginPercent: null }
-        ];
+        ].map((item) => ({ ...item, salePriceEUR: null }));
 
         const state = {
           exchangeRate: 0.8566,
@@ -137,6 +137,11 @@
             const totalUpTrMargeEUR = upTrMargeEURUnit * qty;
             const marginEURUnit = upTrMargeEURUnit - upEUR;
             const totalMarginEUR = marginEURUnit * qty;
+            const salePriceEUR = Number.isFinite(product.salePriceEUR) ? Number(product.salePriceEUR) : null;
+            const saleMarginEURUnit = salePriceEUR === null ? null : salePriceEUR - upTranspEUR;
+            const saleMarginPercent =
+              saleMarginEURUnit === null || upTranspEUR <= 0 ? null : (saleMarginEURUnit / upTranspEUR) * 100;
+            const saleTotalMarginEUR = saleMarginEURUnit === null ? null : saleMarginEURUnit * qty;
 
             return {
               ...product,
@@ -148,6 +153,10 @@
               totalUpTrMargeEUR,
               marginEURUnit,
               totalMarginEUR,
+              salePriceEUR,
+              saleMarginEURUnit,
+              saleMarginPercent,
+              saleTotalMarginEUR,
               totalWeightForRow: weightTotal,
               rowMargin
             };
@@ -159,9 +168,17 @@
               totalAmountUSD: acc.totalAmountUSD + row.totalAmountUSD,
               totalWeightKg: acc.totalWeightKg + row.totalWeightForRow,
               totalUpTrMargeEUR: acc.totalUpTrMargeEUR + row.totalUpTrMargeEUR,
-              totalMarginEUR: acc.totalMarginEUR + row.totalMarginEUR
+              totalMarginEUR: acc.totalMarginEUR + row.totalMarginEUR,
+              totalSaleMarginEUR: acc.totalSaleMarginEUR + (row.saleTotalMarginEUR || 0)
             }),
-            { qty: 0, totalAmountUSD: 0, totalWeightKg: 0, totalUpTrMargeEUR: 0, totalMarginEUR: 0 }
+            {
+              qty: 0,
+              totalAmountUSD: 0,
+              totalWeightKg: 0,
+              totalUpTrMargeEUR: 0,
+              totalMarginEUR: 0,
+              totalSaleMarginEUR: 0
+            }
           );
 
           return {
@@ -187,6 +204,9 @@
             'UP+TR+MARGE (EUR)',
             'TOTAL UP+TR+MARGE (EUR)',
             'Marge (EUR/u)',
+            'Prix vente saisi (EUR/u)',
+            'Marge vente (EUR/u)',
+            'Marge vente (%)',
             'Weight per unit (kg)',
             'Total Weight (kg)',
             'Marge (%) ligne'
@@ -202,12 +222,31 @@
             `${row.upTrMargeEURUnit.toFixed(2)} €`,
             `${row.totalUpTrMargeEUR.toFixed(2)} €`,
             `${row.marginEURUnit.toFixed(2)} €`,
+            row.salePriceEUR === null ? '' : `${row.salePriceEUR.toFixed(2)} €`,
+            row.saleMarginEURUnit === null ? '' : `${row.saleMarginEURUnit.toFixed(2)} €`,
+            row.saleMarginPercent === null ? '' : `${row.saleMarginPercent.toFixed(2)} %`,
             (row.weightKg || 0).toFixed(2),
             row.totalWeightForRow.toFixed(2),
             Number.isFinite(row.rowMargin) ? `${row.rowMargin.toFixed(2)} %` : `${state.marginPercent.toFixed(2)} %`
           ]);
 
-          rows.push(['Total Quantity:', '', shipping.totals.qty, '', `$${shipping.totals.totalAmountUSD.toFixed(2)}`, '', '', `${shipping.totals.totalUpTrMargeEUR.toFixed(2)} €`, `${shipping.totals.totalMarginEUR.toFixed(2)} €`, '', shipping.totals.totalWeightKg.toFixed(2), '']);
+          rows.push([
+            'Total Quantity:',
+            '',
+            shipping.totals.qty,
+            '',
+            `$${shipping.totals.totalAmountUSD.toFixed(2)}`,
+            '',
+            '',
+            `${shipping.totals.totalUpTrMargeEUR.toFixed(2)} €`,
+            `${shipping.totals.totalMarginEUR.toFixed(2)} €`,
+            '',
+            `${shipping.totals.totalSaleMarginEUR.toFixed(2)} €`,
+            '',
+            '',
+            shipping.totals.totalWeightKg.toFixed(2),
+            ''
+          ]);
           rows.push(['Dédouanement (EUR):', '', '', '', '', '', '', '', '', '', '', '', `${state.customsClearanceEUR.toFixed(2)} €`]);
           rows.push(['Fret GEODIS (EUR TTC):', '', '', '', '', '', '', '', '', '', '', '', `${state.freightQuoteEUR.toFixed(2)} €`]);
           rows.push(['Transport total (EUR):', '', '', '', '', '', '', '', '', '', '', '', `${shipping.transportTotalEUR.toFixed(2)} €`]);
@@ -224,7 +263,7 @@
 
         const addShippingRow = () => {
           const nextNo = state.shippingProducts.length ? Math.max(...state.shippingProducts.map((item) => Number(item.no) || 0)) + 1 : 1;
-          state.shippingProducts.push({ no: nextNo, description: '', qty: 0, unitPriceUSD: 0, weightKg: 0 });
+          state.shippingProducts.push({ no: nextNo, description: '', qty: 0, unitPriceUSD: 0, weightKg: 0, marginPercent: null, salePriceEUR: null });
           render();
         };
 
@@ -234,7 +273,7 @@
           const value =
             field === 'description'
               ? rawValue
-              : field === 'marginPercent'
+              : field === 'marginPercent' || field === 'salePriceEUR'
               ? rawValue === '' ? null : parseFloat(rawValue)
               : parseFloat(rawValue) || 0;
           list[index] = { ...list[index], [field]: value };
@@ -387,6 +426,27 @@
                   class="w-24 px-1 py-1 text-right border border-gray-200 rounded"
                 />
               </td>
+              <td class="border border-gray-300 px-2 py-2 text-right w-32">
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="Optionnel"
+                  value="${row.salePriceEUR ?? ''}"
+                  data-index="${index}"
+                  data-field="salePriceEUR"
+                  class="w-28 px-1 py-1 text-right border border-gray-200 rounded"
+                />
+              </td>
+              <td class="border border-gray-300 px-2 py-2 text-right">
+                ${
+                  row.saleMarginEURUnit === null
+                    ? '<span class="text-gray-400">-</span>'
+                    : `<div class="leading-tight ${row.saleMarginEURUnit >= 0 ? 'text-emerald-700' : 'text-red-600'}">
+                         <div>${formatNumber(row.saleMarginEURUnit)} €</div>
+                         <div class="text-xs">${formatNumber(row.saleMarginPercent || 0)} %</div>
+                       </div>`
+                }
+              </td>
             </tr>
           `;
 
@@ -403,6 +463,8 @@
               <td class="border border-gray-300 px-2 py-2"></td>
               <td class="border border-gray-300 px-2 py-2 text-right text-purple-600">${formatNumber(totals.totalMarginEUR)} €</td>
               <td class="border border-gray-300 px-2 py-2"></td>
+              <td class="border border-gray-300 px-2 py-2"></td>
+              <td class="border border-gray-300 px-2 py-2 text-right ${totals.totalSaleMarginEUR >= 0 ? 'text-emerald-700' : 'text-red-600'}">${formatNumber(totals.totalSaleMarginEUR)} €</td>
             </tr>
           `;
 
@@ -471,6 +533,8 @@
                       <th class="border border-gray-300 px-2 py-2 text-right w-28">Marge (EUR/u)</th>
                       <th class="border border-gray-300 px-2 py-2 text-right">Marge Totale (EUR)</th>
                       <th class="border border-gray-300 px-2 py-2 text-center w-28">Marge (%) ligne</th>
+                      <th class="border border-gray-300 px-2 py-2 text-right w-32">Prix Vente (EUR/u)</th>
+                      <th class="border border-gray-300 px-2 py-2 text-right">Marge Vente (EUR/u | %)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -508,6 +572,7 @@
                   <li><strong>Part transport USD / unité:</strong> (Dédouanement + Fret GEODIS) / Taux de change / Quantité totale</li>
                   <li><strong>UP+TR+MARGE (EUR):</strong> (UNIT PRICE + part transport USD / unité) × Taux × (1 + Marge %)</li>
                   <li><strong>TOTAL UP+TR+MARGE (EUR):</strong> UP+TR+MARGE (EUR) × QTY</li>
+                  <li><strong>Option prix de vente:</strong> Marge vente = Prix vente saisi − Coût unitaire réel (UP + transport)</li>
                 </ul>
                 <p class="text-xs text-gray-500 mt-2">Les frais Geodis Dubai (AED) et les versions de calcul ont été retirés.</p>
               </div>
