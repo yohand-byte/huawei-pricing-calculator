@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Huawei Pricing Calculator</title>
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f172a'/%3E%3Cpath d='M8 42h48l-5 8H16z' fill='%230ea5e9'/%3E%3Crect x='16' y='28' width='32' height='12' rx='2' fill='%2310b981'/%3E%3Crect x='20' y='31' width='6' height='6' fill='%23ecfeff'/%3E%3Crect x='29' y='31' width='6' height='6' fill='%23ecfeff'/%3E%3Crect x='38' y='31' width='6' height='6' fill='%23ecfeff'/%3E%3C/svg%3E"
-    />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=2" />
+    <link rel="shortcut icon" href="./favicon.svg?v=2" />
+    <link rel="apple-touch-icon" href="./favicon.svg?v=2" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
@@ -600,8 +598,9 @@
                   <p class="text-2xl font-semibold text-gray-900">$${formatNumber(shipping.averageTransportPerUnitUSD)}</p>
                 </div>
                 <div class="p-4 bg-white border rounded-lg shadow-sm">
-                  <p class="text-sm text-gray-600">Poids total déclaré</p>
-                  <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipping.totalWeightKg)} kg</p>
+                  <p class="text-sm text-gray-600">Poids total facture (PDF)</p>
+                  <p class="text-2xl font-semibold text-gray-900">${formatNumber(shipmentInfo.totalWeightKg, { minimumFractionDigits: 2, maximumFractionDigits: 3 })} kg</p>
+                  <p class="text-xs text-gray-500">Poids calculé tableau: ${formatNumber(shipping.totalWeightKg)} kg</p>
                 </div>
                 <div class="p-4 bg-white border rounded-lg shadow-sm">
                   <p class="text-sm text-gray-600">Coût logistique total</p>
